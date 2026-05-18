@@ -59,8 +59,8 @@ jobs:
         uses: peter-evans/create-pull-request@v6
         with:
           branch: agentic/polaris-provider-update
-          title: "Agentic Polaris provider update"
-          commit-message: "Update generated Polaris Terraform provider"
+          title: "feat(polaris): update generated Terraform provider"
+          commit-message: "feat(polaris): update generated Terraform provider"
           body: |
             Weekly autonomous update from Apache Polaris OpenAPI specs.
 

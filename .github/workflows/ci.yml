@@ -18,10 +18,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - run: apt-get update && apt-get install -y --no-install-recommends shellcheck ca-certificates
+      - run: apt-get update && apt-get install -y --no-install-recommends shellcheck jq ca-certificates
       - run: go mod download
       - run: go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.12
       - run: shellcheck scripts/*.sh
+      - run: scripts/check_release_please_config.sh
       - run: |
           actionlint_bin="$(go env GOPATH)/bin/actionlint"
           "${actionlint_bin}" -color=false .github/workflows/*.yml

@@ -1,65 +1,58 @@
-name: Release
+name: Release Please
 
 on:
   push:
     branches:
       - main
       - master
+  schedule:
+    - cron: "37 5 * * 2"
   workflow_dispatch:
 
 permissions:
   contents: write
+  issues: write
+  pull-requests: write
 
 jobs:
-  release:
+  release-please:
     runs-on: ubuntu-latest
-    container: golang:1.23-bookworm
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+      version: ${{ steps.release.outputs.version }}
+    steps:
+      - id: release
+        uses: googleapis/release-please-action@v4
+        with:
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN || github.token }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  publish-assets:
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ needs.release-please.outputs.tag_name }}
           fetch-depth: 0
-      - run: apt-get update && apt-get install -y --no-install-recommends zip ca-certificates
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - run: sudo apt-get update && sudo apt-get install -y --no-install-recommends zip ca-certificates
       - run: go mod download
       - run: make generate fmt test
       - run: git diff --exit-code
-      - name: Calculate release version
-        id: version
-        run: |
-          tag="v0.0.${GITHUB_RUN_NUMBER}"
-          echo "tag=$tag" >> "$GITHUB_OUTPUT"
-          echo "version=${tag#v}" >> "$GITHUB_OUTPUT"
       - name: Build Terraform provider artifacts
-        run: |
-          mkdir -p dist
-          version="${{ steps.version.outputs.version }}"
-          for target in linux_amd64 linux_arm64 darwin_amd64 darwin_arm64; do
-            os="${target%_*}"
-            arch="${target#*_}"
-            work="dist/${target}"
-            mkdir -p "${work}"
-            GOOS="${os}" GOARCH="${arch}" go build -ldflags "-X main.version=${version}" -o "${work}/terraform-provider-polaris_v${version}" .
-            (cd "${work}" && zip "../terraform-provider-polaris_${version}_${os}_${arch}.zip" "terraform-provider-polaris_v${version}")
-          done
-          (cd dist && sha256sum ./*.zip > "terraform-provider-polaris_${version}_SHA256SUMS")
-      - name: Create release tag
-        run: |
-          tag="${{ steps.version.outputs.tag }}"
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if git rev-parse "$tag" >/dev/null 2>&1; then
-            exit 0
-          fi
-          git tag "$tag"
-          git push origin "$tag"
-      - name: Publish GitHub release
+        run: scripts/build_release_artifacts.sh "${{ needs.release-please.outputs.version }}" dist
+      - name: Upload release assets
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.version.outputs.tag }}
-          name: Terraform Provider Polaris ${{ steps.version.outputs.tag }}
+          tag_name: ${{ needs.release-please.outputs.tag_name }}
           files: |
             dist/*.zip
             dist/*_SHA256SUMS
-          body: |
-            Autonomous provider release.
-
-            Built from the current generated Apache Polaris OpenAPI operation registry.

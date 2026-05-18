@@ -12,6 +12,7 @@ It checks Apache Polaris weekly, fetches the newest OpenAPI specs from the lates
 - A generic `polaris_rest_resource` resource for create/read/update/delete workflows backed by OpenAPI `operationId`s.
 - A weekly GitHub Action that opens a pull request when Polaris changes.
 - An agentic loop that can run Codex CLI or any other GenAI CLI.
+- Release Please tracking with a monthly controlled release train.
 
 ## Why Generic First?
 
@@ -97,15 +98,45 @@ It does:
 8. Open a pull request with the generated/provider changes.
 ```
 
+The generated update PR uses a Conventional Commit title and commit message:
+
+```text
+feat(polaris): update generated Terraform provider
+```
+
+That keeps weekly Polaris changes visible to Release Please without publishing a release every week.
+
+## Releases
+
+Releases are managed by Release Please instead of synthetic run-number tags.
+
+```text
+Weekly:
+  - Agentic update PRs land as Conventional Commits.
+  - Release Please opens or updates the release PR.
+  - CHANGELOG.md and .release-please-manifest.json show what the next release will contain.
+
+Monthly:
+  - .github/workflows/monthly-release.yml finds the pending Release Please PR.
+  - It validates the release branch with linting, generation, tests, build and a real Polaris Terraform apply/destroy gate.
+  - It merges the release PR.
+  - Release Please creates the GitHub release.
+  - scripts/build_release_artifacts.sh uploads provider binaries and SHA256SUMS.
+```
+
+Manual release preparation is still possible by running `.github/workflows/release.yml`.
+
+Use `feat:` for provider capability changes, `fix:` for bug fixes and `feat!:` or `fix!:` for breaking changes. Pure maintenance commits can use `chore:`, `ci:` or `docs:` and will not force a version bump by themselves.
+
 ## One-Time Setup
 
-For the autonomous mode, set one repository secret:
+For agentic repair mode, set one repository secret:
 
 ```text
 Secret: OPENAI_API_KEY
 ```
 
-That is enough for the repo to run as a self-maintaining public project:
+That is enough for weekly provider maintenance:
 
 - weekly Polaris OpenAPI update
 - agentic repair loop
@@ -113,10 +144,22 @@ That is enough for the repo to run as a self-maintaining public project:
 - quarterly cleanup and hardening build
 - auto PR
 - auto-merge when checks pass
-- release artifacts after merge
 - weekly self-improvement pass for tooling, tests and hardening
 - Dependabot for Go, GitHub Actions and Codex CLI runtime
 - CodeQL and OSSF Scorecard
+
+Recommended additional secret for full release automation:
+
+```text
+Secret: RELEASE_PLEASE_TOKEN
+```
+
+This should be a fine-grained GitHub token that can create and merge Release Please pull requests and create releases. Without it, the workflows fall back to `GITHUB_TOKEN`; that works for basic repository writes, but GitHub does not trigger follow-up workflows from events created by `GITHUB_TOKEN`, so protected-branch release automation is less smooth.
+
+With `RELEASE_PLEASE_TOKEN`, the repo also runs:
+
+- weekly Release Please preparation
+- monthly controlled GitHub releases with provider artifacts
 
 Optional variables:
 

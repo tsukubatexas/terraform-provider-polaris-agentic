@@ -43,7 +43,8 @@ write_prompt() {
     echo "- Keep Go dependencies modern but stable."
     echo "- Improve tests for generator/provider behavior."
     echo "- Harden GitHub Actions permissions and avoid secret exposure."
-    echo "- Preserve weekly Polaris update, test catalog, auto PR, auto merge and release behavior."
+    echo "- Preserve weekly Polaris update, test catalog, auto PR, auto merge, Release Please and monthly release train behavior."
+    echo "- Keep PR commit messages compatible with Conventional Commits so Release Please can calculate SemVer."
     echo "- Run make generate fmt test build."
     echo
     echo "Do not:"
