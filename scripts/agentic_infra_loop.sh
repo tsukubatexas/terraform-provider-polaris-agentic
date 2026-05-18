@@ -68,7 +68,7 @@ start_infra() {
   fi
 }
 
-# shellcheck disable=SC2329 # Called through EXIT trap.
+# shellcheck disable=SC2317,SC2329 # Called through EXIT trap.
 cleanup_infra() {
   if [[ "${STARTED_CONTAINER}" == "true" ]]; then
     docker rm -f "${POLARIS_CONTAINER_NAME}" >/dev/null 2>&1 || true

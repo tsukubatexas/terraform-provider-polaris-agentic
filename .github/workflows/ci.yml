@@ -18,9 +18,10 @@ jobs:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           fetch-depth: 0
+      - run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - run: apt-get update && apt-get install -y --no-install-recommends shellcheck jq ca-certificates
       - run: go mod download
-      - run: go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.12
+      - run: go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.11
       - run: shellcheck scripts/*.sh
       - run: scripts/check_release_please_config.sh
       - run: scripts/check_actions_pinned.sh

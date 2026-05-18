@@ -15,7 +15,7 @@ test:
 
 build:
 	mkdir -p dist
-	$(GO) build -o dist/terraform-provider-polaris .
+	$(GO) build -buildvcs=false -o dist/terraform-provider-polaris .
 
 agentic-update:
 	scripts/agentic_loop.sh
