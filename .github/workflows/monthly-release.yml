@@ -11,6 +11,10 @@ permissions:
   pull-requests: write
   checks: read
 
+concurrency:
+  group: release-please-main
+  cancel-in-progress: false
+
 jobs:
   monthly-release:
     runs-on: ubuntu-latest
