@@ -17,6 +17,7 @@ Use Release Please as the release tracker.
 - Weekly Polaris update PRs use `feat(polaris): ...` commit messages so relevant API/provider changes are included in the next SemVer release.
 - `.github/workflows/release.yml` runs Release Please on pushes, on a weekly schedule, and manually. It maintains the release PR and uploads provider binaries when a release is created.
 - `.github/workflows/monthly-release.yml` is the monthly controlled release train. It prepares the release PR, validates it with the static release gate, merges it, asks Release Please to publish the release, and uploads provider binaries.
+- The monthly release train queries pull requests with an explicit repository selector so the scheduled job does not depend on a local checkout before checkout has happened.
 - Release artifacts are built by `scripts/build_release_artifacts.sh` so the weekly/manual and monthly paths use the same packaging logic.
 - `scripts/check_release_please_config.sh` keeps the manifest setup valid in CI.
 

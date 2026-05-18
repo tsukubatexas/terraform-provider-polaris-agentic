@@ -29,6 +29,7 @@ jobs:
           actionlint_bin="$(go env GOPATH)/bin/actionlint"
           "${actionlint_bin}" -color=false .github/workflows/*.yml
       - run: make generate fmt test build
+      - run: scripts/smoke_agent_command_path.sh
       - run: scripts/smoke_agentic_loop.sh
       - run: scripts/smoke_agentic_infra_loop.sh
       - run: scripts/smoke_quarterly_cleanup.sh

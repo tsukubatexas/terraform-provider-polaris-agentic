@@ -18,7 +18,10 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-var httpClient = &http.Client{Timeout: 30 * time.Second}
+var (
+	httpClient      = &http.Client{Timeout: 30 * time.Second}
+	httpRetryDelays = []time.Duration{1 * time.Second, 2 * time.Second, 4 * time.Second}
+)
 
 var defaultSpecs = []specSource{
 	{Path: "spec/polaris-management-service.yml", Required: true},
@@ -123,7 +126,7 @@ func latestRelease() (*releaseResponse, error) {
 	if token := os.Getenv("GITHUB_TOKEN"); token != "" {
 		req.Header.Set("Authorization", "Bearer "+token)
 	}
-	resp, err := httpClient.Do(req)
+	resp, err := doHTTPRequest(req)
 	if err != nil {
 		return nil, err
 	}
@@ -149,7 +152,7 @@ func fetchSpec(tag string, source specSource) ([]byte, bool, error) {
 	if token := os.Getenv("GITHUB_TOKEN"); token != "" {
 		req.Header.Set("Authorization", "Bearer "+token)
 	}
-	resp, err := httpClient.Do(req)
+	resp, err := doHTTPRequest(req)
 	if err != nil {
 		return nil, false, err
 	}
@@ -163,6 +166,40 @@ func fetchSpec(tag string, source specSource) ([]byte, bool, error) {
 	}
 	body, err := io.ReadAll(resp.Body)
 	return body, true, err
+}
+
+func doHTTPRequest(req *http.Request) (*http.Response, error) {
+	attempts := len(httpRetryDelays) + 1
+	var lastErr error
+	var lastStatus int
+	var lastBody []byte
+
+	for attempt := 0; attempt < attempts; attempt++ {
+		resp, err := httpClient.Do(req.Clone(req.Context()))
+		if err == nil && !isRetryableStatus(resp.StatusCode) {
+			return resp, nil
+		}
+
+		if resp != nil {
+			lastStatus = resp.StatusCode
+			lastBody, _ = io.ReadAll(io.LimitReader(resp.Body, 4096))
+			resp.Body.Close()
+		}
+		lastErr = err
+
+		if attempt < len(httpRetryDelays) {
+			time.Sleep(httpRetryDelays[attempt])
+		}
+	}
+
+	if lastErr != nil {
+		return nil, fmt.Errorf("request %s failed after %d attempts: %w", req.URL.String(), attempts, lastErr)
+	}
+	return nil, fmt.Errorf("request %s failed after %d attempts with HTTP %d: %s", req.URL.String(), attempts, lastStatus, strings.TrimSpace(string(lastBody)))
+}
+
+func isRetryableStatus(status int) bool {
+	return status == http.StatusTooManyRequests || (status >= http.StatusInternalServerError && status <= 599)
 }
 
 func parseSpec(specPath string, body []byte) ([]generatedOperation, error) {

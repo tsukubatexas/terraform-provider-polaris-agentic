@@ -8,6 +8,7 @@ on:
       - master
   schedule:
     - cron: "11 5 * * 1"
+  workflow_dispatch:
 
 permissions:
   contents: read
