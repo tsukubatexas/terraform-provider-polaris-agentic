@@ -1,0 +1,55 @@
+name: Weekly Self Improvement
+
+on:
+  schedule:
+    - cron: "29 5 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  self-improve:
+    runs-on: ubuntu-latest
+    container: golang:1.23-bookworm
+    timeout-minutes: 90
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      AGENT_MODEL: ${{ vars.AGENT_MODEL || 'gpt-5.2' }}
+      AGENT_MAX_ROUNDS: ${{ vars.AGENT_MAX_ROUNDS || '5' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: apt-get update && apt-get install -y --no-install-recommends git curl jq ca-certificates
+      - run: go mod download
+      - run: npm --prefix tools/agent-runtime install
+      - name: Run self-improvement agent
+        run: scripts/self_improve.sh
+      - name: Create pull request
+        id: cpr
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: agentic/self-improvement
+          title: "Self-improve autonomous provider maintenance"
+          commit-message: "Self-improve autonomous maintenance loop"
+          body: |
+            Autonomous self-improvement pass.
+
+            Scope:
+            - update pinned agent/runtime/tooling where safe
+            - improve generator/provider tests
+            - harden GitHub Actions and release automation
+            - keep `make generate fmt test build` green
+          labels: |
+            agentic
+            self-improvement
+            hardening
+      - name: Enable auto-merge
+        if: ${{ steps.cpr.outputs.pull-request-number != '' && vars.DISABLE_AUTOMERGE != 'true' }}
+        uses: peter-evans/enable-pull-request-automerge@v3
+        with:
+          pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
+          merge-method: squash

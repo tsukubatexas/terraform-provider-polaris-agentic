@@ -1,0 +1,31 @@
+name: Test Catalog
+
+on:
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: "43 4 * * 1"
+
+jobs:
+  test-catalog:
+    runs-on: ubuntu-latest
+    container: golang:1.23-bookworm
+    services:
+      polaris:
+        image: apache/polaris:latest
+        ports:
+          - 8181:8181
+    env:
+      POLARIS_ENDPOINT: http://polaris:8181/api/management/v1
+      POLARIS_REALM: POLARIS
+      POLARIS_ROOT_CLIENT_ID: root
+      POLARIS_ROOT_CLIENT_SECRET: s3cr3t
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+      - run: apt-get update && apt-get install -y --no-install-recommends curl jq unzip ca-certificates
+      - run: go mod download
+      - run: make generate fmt test build
+      - run: scripts/test_catalog.sh

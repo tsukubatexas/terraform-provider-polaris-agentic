@@ -1,0 +1,34 @@
+version: 2
+updates:
+  - package-ecosystem: "gomod"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:21"
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - go
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:31"
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - github-actions
+
+  - package-ecosystem: "npm"
+    directory: "/tools/agent-runtime"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:41"
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - agent
