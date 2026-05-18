@@ -29,6 +29,7 @@ Add open source and security hardening:
 - Disable Go VCS stamping for provider binaries so container and release builds stay reproducible without depending on a writable Git checkout.
 - Mark GitHub container workspaces as safe Git directories before running repository-diff guards.
 - Verify pinned GitHub Actions against the referenced action repository so annotated tag object SHAs or unrelated commits cannot pass the local guard.
+- Run OpenSSF Scorecard publishing in its own workflow so the publisher does not reject unrelated sub-actions such as CodeQL's SARIF uploader during workflow verification.
 - Configure the GitHub repository for Dependabot alerts, automatic security fixes, secret scanning, push protection, squash merges, branch deletion after merge, topics, and branch protection.
 
 ## Consequences
@@ -37,4 +38,5 @@ Add open source and security hardening:
 - Workflow supply-chain risk is reduced by immutable action references.
 - Maintainers must intentionally update pinned actions.
 - The action-pin guard now needs `curl` and network access in CI and release validation jobs.
+- Scorecard and CodeQL are separate workflows even though both are part of the security gate.
 - Branch protection means direct pushes to `main` should become exceptional.

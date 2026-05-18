@@ -18,8 +18,8 @@ This repository is intentionally public and autonomous, so the default posture i
 - External GitHub Actions are pinned to full commit SHAs.
 - `scripts/check_actions_pinned.sh` blocks tag-pinned actions.
 - `shellcheck` and `actionlint` run in CI.
-- CodeQL scans Go code.
-- OpenSSF Scorecard publishes SARIF results.
+- CodeQL scans Go code and uploads SARIF results.
+- OpenSSF Scorecard publishes public project security score results from an isolated workflow.
 - Dependency review blocks high-severity vulnerable dependency additions in pull requests.
 
 ## Provider Controls
