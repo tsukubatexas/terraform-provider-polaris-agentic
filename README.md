@@ -35,6 +35,32 @@ make test
 make build
 ```
 
+Test the autonomous loop locally without spending API calls:
+
+```bash
+scripts/smoke_agentic_loop.sh
+scripts/smoke_self_improve_loop.sh
+scripts/smoke_release_matrix.sh
+```
+
+The smoke test creates an intentional failing test, injects a fake repair agent, verifies that the loop enters repair mode, removes the failure and finishes green.
+
+The release matrix smoke test currently covers Polaris `0.9.0-incubating`, `1.0.0-incubating`, `1.2.0-incubating`, `1.3.0-incubating` and `1.4.1`. Polaris `0.9.0` does not include the later Catalog/Iceberg spec files, so the generator treats them as optional and still verifies the provider against the older management API shape.
+
+Test the provider against a real local Polaris container:
+
+```bash
+docker run -d --rm \
+  --name polaris-provider-smoke \
+  -p 8181:8181 \
+  -e POLARIS_BOOTSTRAP_CREDENTIALS=POLARIS,root,s3cr3t \
+  apache/polaris:latest
+
+scripts/test_catalog.sh
+```
+
+That script builds the provider, installs it into Terraform's local provider mirror as `tsukubatexas/polaris`, fetches a Polaris OAuth token, applies `examples/test-catalog`, and destroys it again. It creates an internal test catalog named `agentic_test` and uses an S3-style test location only for catalog CRUD validation.
+
 Force a specific Polaris release:
 
 ```bash
@@ -89,7 +115,7 @@ AGENT_REPAIR_COMMAND = custom agent command
 By default, if `OPENAI_API_KEY` exists and no custom command is configured, the loop runs:
 
 ```bash
-npx -y @openai/codex exec \
+npx --prefix tools/agent-runtime codex exec \
   --dangerously-bypass-approvals-and-sandbox \
   -a never \
   --search \
@@ -133,6 +159,15 @@ The workflows request write permissions only in jobs that create PRs, enable aut
 ## Provider Example
 
 ```hcl
+terraform {
+  required_providers {
+    polaris = {
+      source  = "tsukubatexas/polaris"
+      version = "0.0.1"
+    }
+  }
+}
+
 provider "polaris" {
   endpoint        = "https://polaris.example.com/api/management/v1"
   realm           = "POLARIS"

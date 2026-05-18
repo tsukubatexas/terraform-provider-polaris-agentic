@@ -18,15 +18,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - run: apt-get update && apt-get install -y --no-install-recommends zip ca-certificates
       - run: go mod download
       - run: make generate fmt test
-      - name: Build cross-platform provider artifacts
-        run: |
-          mkdir -p dist
-          for target in linux_amd64 linux_arm64 darwin_amd64 darwin_arm64; do
-            GOOS="${target%_*}" GOARCH="${target#*_}" go build -o "dist/terraform-provider-polaris_${target}" .
-            tar -czf "dist/terraform-provider-polaris_${target}.tar.gz" -C dist "terraform-provider-polaris_${target}"
-          done
       - name: Create release tag
         id: tag
         run: |
@@ -40,12 +34,31 @@ jobs:
           git tag "$tag"
           git push origin "$tag"
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
+      - name: Build Terraform provider artifacts
+        run: |
+          mkdir -p dist
+          version="${GITHUB_REF_NAME#v}"
+          if [ "${version}" = "${GITHUB_REF_NAME}" ]; then
+            version="${{ steps.tag.outputs.tag }}"
+            version="${version#v}"
+          fi
+          for target in linux_amd64 linux_arm64 darwin_amd64 darwin_arm64; do
+            os="${target%_*}"
+            arch="${target#*_}"
+            work="dist/${target}"
+            mkdir -p "${work}"
+            GOOS="${os}" GOARCH="${arch}" go build -ldflags "-X main.version=${version}" -o "${work}/terraform-provider-polaris_v${version}" .
+            (cd "${work}" && zip "../terraform-provider-polaris_${version}_${os}_${arch}.zip" "terraform-provider-polaris_v${version}")
+          done
+          (cd dist && sha256sum *.zip > "terraform-provider-polaris_${version}_SHA256SUMS")
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.tag.outputs.tag }}
           name: Terraform Provider Polaris ${{ steps.tag.outputs.tag }}
-          files: dist/*.tar.gz
+          files: |
+            dist/*.zip
+            dist/*_SHA256SUMS
           body: |
             Autonomous provider release.
 

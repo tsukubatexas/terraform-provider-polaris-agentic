@@ -15,4 +15,5 @@ jobs:
       - uses: actions/checkout@v4
       - run: go mod download
       - run: make generate fmt test build
+      - run: scripts/smoke_release_matrix.sh
       - run: git diff --exit-code

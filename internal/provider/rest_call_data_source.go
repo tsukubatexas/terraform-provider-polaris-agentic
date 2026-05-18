@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -106,8 +107,15 @@ func methodAndPath(d *schema.ResourceData, operationAttr, methodAttr, pathAttr s
 }
 
 func mapValues(values map[string]string) []string {
+	keys := make([]string, 0, len(values))
+	for k := range values {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
 	result := make([]string, 0, len(values))
-	for k, v := range values {
+	for _, k := range keys {
+		v := values[k]
 		result = append(result, k+"="+v)
 	}
 	return result

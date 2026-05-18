@@ -18,6 +18,7 @@ jobs:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       AGENT_MODEL: ${{ vars.AGENT_MODEL || 'gpt-5.2' }}
       AGENT_MAX_ROUNDS: ${{ vars.AGENT_MAX_ROUNDS || '5' }}
+      AGENT_REPAIR_COMMAND: ${{ vars.AGENT_REPAIR_COMMAND }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

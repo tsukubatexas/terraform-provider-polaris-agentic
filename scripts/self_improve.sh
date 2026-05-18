@@ -12,17 +12,20 @@ FAILURE_LOG="${WORK_DIR}/self-improve-checks.log"
 LAST_MESSAGE="${WORK_DIR}/self-improve-last-message.md"
 mkdir -p "${WORK_DIR}"
 
-if [[ -z "${OPENAI_API_KEY:-}" ]]; then
-  echo "OPENAI_API_KEY is required for self-improvement mode." >&2
-  exit 1
-fi
+default_codex_command() {
+  if [[ -n "${OPENAI_API_KEY:-}" ]]; then
+    printf 'npx --prefix tools/agent-runtime codex exec --dangerously-bypass-approvals-and-sandbox -a never --search -m %q -C %q -o %q -' "${AGENT_MODEL}" "${ROOT_DIR}" "${LAST_MESSAGE}"
+  fi
+}
+
+AGENT_REPAIR_COMMAND="${AGENT_REPAIR_COMMAND:-$(default_codex_command)}"
 
 run_checks() {
-  make generate
-  make fmt
-  make test
-  make build
-  bash -n scripts/*.sh
+  make generate &&
+    make fmt &&
+    make test &&
+    make build &&
+    bash -n scripts/*.sh
 }
 
 write_prompt() {
@@ -69,14 +72,14 @@ for round in $(seq 1 "${MAX_ROUNDS}"); do
     write_prompt "${round}"
   fi
 
-  npx --prefix tools/agent-runtime codex exec \
-    --dangerously-bypass-approvals-and-sandbox \
-    -a never \
-    --search \
-    -m "${AGENT_MODEL}" \
-    -C "${ROOT_DIR}" \
-    -o "${LAST_MESSAGE}" \
-    - <"${PROMPT_FILE}"
+  if [[ -z "${AGENT_REPAIR_COMMAND}" ]]; then
+    echo "No AGENT_REPAIR_COMMAND configured and OPENAI_API_KEY is not available." >&2
+    echo "Set AGENT_REPAIR_COMMAND or OPENAI_API_KEY for autonomous self-improvement." >&2
+    exit 1
+  fi
+
+  # shellcheck disable=SC2086
+  ${SHELL:-bash} -lc "${AGENT_REPAIR_COMMAND} < '${PROMPT_FILE}'"
 
   if run_checks >"${FAILURE_LOG}" 2>&1; then
     cat "${FAILURE_LOG}"

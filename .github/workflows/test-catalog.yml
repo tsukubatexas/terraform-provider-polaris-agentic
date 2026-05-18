@@ -13,6 +13,8 @@ jobs:
     services:
       polaris:
         image: apache/polaris:latest
+        env:
+          POLARIS_BOOTSTRAP_CREDENTIALS: POLARIS,root,s3cr3t
         ports:
           - 8181:8181
     env:

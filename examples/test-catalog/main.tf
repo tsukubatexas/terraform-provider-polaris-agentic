@@ -1,8 +1,8 @@
 terraform {
   required_providers {
     polaris = {
-      source  = "local/polaris/polaris"
-      version = "0.0.0"
+      source  = "tsukubatexas/polaris"
+      version = "0.0.1"
     }
   }
 }
@@ -40,14 +40,14 @@ resource "polaris_rest_resource" "test_catalog" {
       type = "INTERNAL"
       name = "agentic_test"
       properties = {
-        "default-base-location" = "file:///tmp/agentic_test"
+        "default-base-location" = "s3://agentic-test/"
       }
       storageConfigInfo = {
-        storageType      = "FILE"
-        allowedLocations = ["file:///tmp/agentic_test"]
+        storageType      = "S3"
+        allowedLocations = ["s3://agentic-test/"]
       }
     }
   })
 
-  id_attribute = "catalog.name"
+  id_attribute = "name"
 }

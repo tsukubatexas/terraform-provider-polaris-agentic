@@ -23,10 +23,10 @@ default_codex_command() {
 AGENT_REPAIR_COMMAND="${AGENT_REPAIR_COMMAND:-$(default_codex_command)}"
 
 run_checks() {
-  make generate POLARIS_RELEASE="${POLARIS_RELEASE}"
-  make fmt
-  make test
-  make build
+  make generate POLARIS_RELEASE="${POLARIS_RELEASE}" &&
+    make fmt &&
+    make test &&
+    make build
 }
 
 write_prompt() {

@@ -17,14 +17,19 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-var defaultSpecs = []string{
-	"spec/polaris-management-service.yml",
-	"spec/polaris-catalog-service.yaml",
-	"spec/iceberg-rest-catalog-open-api.yaml",
-	"spec/polaris-catalog-apis/generic-tables-api.yaml",
-	"spec/polaris-catalog-apis/notifications-api.yaml",
-	"spec/polaris-catalog-apis/oauth-tokens-api.yaml",
-	"spec/polaris-catalog-apis/policy-apis.yaml",
+var defaultSpecs = []specSource{
+	{Path: "spec/polaris-management-service.yml", Required: true},
+	{Path: "spec/polaris-catalog-service.yaml"},
+	{Path: "spec/iceberg-rest-catalog-open-api.yaml"},
+	{Path: "spec/polaris-catalog-apis/generic-tables-api.yaml"},
+	{Path: "spec/polaris-catalog-apis/notifications-api.yaml"},
+	{Path: "spec/polaris-catalog-apis/oauth-tokens-api.yaml"},
+	{Path: "spec/polaris-catalog-apis/policy-apis.yaml"},
+}
+
+type specSource struct {
+	Path     string
+	Required bool
 }
 
 type releaseResponse struct {
@@ -74,12 +79,17 @@ func main() {
 	}
 
 	ops := map[string]generatedOperation{}
-	for _, specPath := range defaultSpecs {
-		body, err := fetchSpec(tag, specPath)
+	skipped := []string{}
+	for _, source := range defaultSpecs {
+		body, ok, err := fetchSpec(tag, source)
 		must(err)
-		cacheSpec(*specCacheDir, tag, specPath, body)
+		if !ok {
+			skipped = append(skipped, source.Path)
+			continue
+		}
+		cacheSpec(*specCacheDir, tag, source.Path, body)
 
-		specOps, err := parseSpec(specPath, body)
+		specOps, err := parseSpec(source.Path, body)
 		must(err)
 		for _, op := range specOps {
 			if existing, ok := ops[op.ID]; ok {
@@ -95,6 +105,9 @@ func main() {
 	must(writeOperations(*out, tag, ops))
 	must(writeDocs(*docsOut, tag, ops))
 	fmt.Printf("Generated %d Polaris operations from %s\n", len(ops), tag)
+	if len(skipped) > 0 {
+		fmt.Printf("Skipped optional specs missing in %s: %s\n", tag, strings.Join(skipped, ", "))
+	}
 }
 
 func latestRelease() (*releaseResponse, error) {
@@ -119,18 +132,22 @@ func latestRelease() (*releaseResponse, error) {
 	return &release, nil
 }
 
-func fetchSpec(tag, specPath string) ([]byte, error) {
-	url := fmt.Sprintf("https://raw.githubusercontent.com/apache/polaris/%s/%s", tag, specPath)
+func fetchSpec(tag string, source specSource) ([]byte, bool, error) {
+	url := fmt.Sprintf("https://raw.githubusercontent.com/apache/polaris/%s/%s", tag, source.Path)
 	resp, err := http.Get(url) //nolint:gosec
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode == http.StatusNotFound && !source.Required {
+		return nil, false, nil
+	}
 	if resp.StatusCode != http.StatusOK {
 		body, _ := io.ReadAll(resp.Body)
-		return nil, fmt.Errorf("fetch %s failed with HTTP %d: %s", url, resp.StatusCode, string(body))
+		return nil, false, fmt.Errorf("fetch %s failed with HTTP %d: %s", url, resp.StatusCode, string(body))
 	}
-	return io.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
+	return body, true, err
 }
 
 func parseSpec(specPath string, body []byte) ([]generatedOperation, error) {
