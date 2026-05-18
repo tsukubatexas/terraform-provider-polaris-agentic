@@ -19,6 +19,7 @@ Use Release Please as the release tracker.
 - `.github/workflows/monthly-release.yml` is the monthly controlled release train. It prepares the release PR, validates it with the static release gate, merges it, asks Release Please to publish the release, and uploads provider binaries.
 - The monthly release train queries pull requests with an explicit repository selector so the scheduled job does not depend on a local checkout before checkout has happened.
 - If branch protection still requires a human review, or repository auto-merge is unavailable, the monthly release train exits successfully after validation and reports that a human merge is required. Release publishing only runs when the release PR actually merged in the same workflow run.
+- The weekly Release Please workflow and the monthly release train share a GitHub Actions concurrency group because both mutate the `release-please--branches--main` branch and must not race when manually dispatched together.
 - Release artifacts are built by `scripts/build_release_artifacts.sh` so the weekly/manual and monthly paths use the same packaging logic.
 - `scripts/check_release_please_config.sh` keeps the manifest setup valid in CI.
 
@@ -29,3 +30,4 @@ Use Release Please as the release tracker.
 - Release history is based on Conventional Commits and a generated `CHANGELOG.md`.
 - Full monthly automation works best with a `RELEASE_PLEASE_TOKEN` secret because GitHub's default `GITHUB_TOKEN` has event-trigger limitations for resources it creates.
 - Hardened branch protection can intentionally turn the monthly release train into a validated queue step until the release PR has the required review or repository auto-merge is enabled.
+- Manual verification can dispatch the weekly and monthly release workflows at the same time; GitHub queues them instead of letting two Release Please actions update the same branch concurrently.
