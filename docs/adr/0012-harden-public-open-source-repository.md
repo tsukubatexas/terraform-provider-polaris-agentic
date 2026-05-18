@@ -22,6 +22,8 @@ Add open source and security hardening:
 - Add `.editorconfig` and `.gitattributes` for consistent public contributions.
 - Document the hardening model in `docs/security-hardening.md`.
 - Upgrade the vulnerable transitive `google.golang.org/grpc` dependency to a patched release and move CI containers to Go 1.24.
+- Keep the CI-installed Actionlint version compatible with the Go toolchain used in container jobs.
+- Keep workflow-level permissions read-only so OpenSSF Scorecard can verify and publish results.
 - Configure the GitHub repository for Dependabot alerts, automatic security fixes, secret scanning, push protection, squash merges, branch deletion after merge, topics, and branch protection.
 
 ## Consequences
