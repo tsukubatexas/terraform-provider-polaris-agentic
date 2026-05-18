@@ -132,8 +132,8 @@ func latestRelease() (*releaseResponse, error) {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body)
-		return nil, fmt.Errorf("GitHub release lookup failed with HTTP %d: %s", resp.StatusCode, string(body))
+		body, _ := io.ReadAll(io.LimitReader(resp.Body, 4096))
+		return nil, fmt.Errorf("GitHub release lookup failed with HTTP %d: %s", resp.StatusCode, strings.TrimSpace(string(body)))
 	}
 	var release releaseResponse
 	if err := json.NewDecoder(resp.Body).Decode(&release); err != nil {
@@ -161,8 +161,8 @@ func fetchSpec(tag string, source specSource) ([]byte, bool, error) {
 		return nil, false, nil
 	}
 	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body)
-		return nil, false, fmt.Errorf("fetch %s failed with HTTP %d: %s", specURL, resp.StatusCode, string(body))
+		body, _ := io.ReadAll(io.LimitReader(resp.Body, 4096))
+		return nil, false, fmt.Errorf("fetch %s failed with HTTP %d: %s", specURL, resp.StatusCode, strings.TrimSpace(string(body)))
 	}
 	body, err := io.ReadAll(resp.Body)
 	return body, true, err

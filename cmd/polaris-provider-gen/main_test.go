@@ -4,6 +4,8 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -107,5 +109,67 @@ func TestDoHTTPRequestsRetriesTransientStatus(t *testing.T) {
 	}
 	if attempts != 2 {
 		t.Fatalf("attempts got %d want 2", attempts)
+	}
+}
+
+func TestWriteOperationsIsDeterministic(t *testing.T) {
+	dir := t.TempDir()
+	out := filepath.Join(dir, "operations_gen.go")
+
+	ops := map[string]generatedOperation{
+		"b": {ID: "b", Spec: "spec/b.yaml", Method: "POST", Path: "/b", Summary: "b", Tags: []string{"B"}},
+		"a": {ID: "a", Spec: "spec/a.yaml", Method: "GET", Path: "/a", Summary: "a", Tags: []string{"A"}},
+	}
+
+	if err := writeOperations(out, "apache-polaris-0.0.0", ops); err != nil {
+		t.Fatalf("writeOperations: %v", err)
+	}
+
+	body, err := os.ReadFile(out)
+	if err != nil {
+		t.Fatalf("read: %v", err)
+	}
+	text := string(body)
+
+	if !strings.Contains(text, "var GeneratedAt = \"reproducible\"") {
+		t.Fatalf("expected reproducible GeneratedAt, got:\n%s", text)
+	}
+
+	idxA := strings.Index(text, "\"a\": {")
+	idxB := strings.Index(text, "\"b\": {")
+	if idxA == -1 || idxB == -1 {
+		t.Fatalf("expected both operations, got:\n%s", text)
+	}
+	if idxA > idxB {
+		t.Fatalf("expected sorted output (a before b), got:\n%s", text)
+	}
+}
+
+func TestWriteDocsIsDeterministic(t *testing.T) {
+	dir := t.TempDir()
+	out := filepath.Join(dir, "generated-operations.md")
+
+	ops := map[string]generatedOperation{
+		"b": {ID: "b", Spec: "spec/b.yaml", Method: "POST", Path: "/b"},
+		"a": {ID: "a", Spec: "spec/a.yaml", Method: "GET", Path: "/a"},
+	}
+
+	if err := writeDocs(out, "apache-polaris-0.0.0", ops); err != nil {
+		t.Fatalf("writeDocs: %v", err)
+	}
+
+	body, err := os.ReadFile(out)
+	if err != nil {
+		t.Fatalf("read: %v", err)
+	}
+	text := string(body)
+
+	idxA := strings.Index(text, "| `a` |")
+	idxB := strings.Index(text, "| `b` |")
+	if idxA == -1 || idxB == -1 {
+		t.Fatalf("expected both operations, got:\n%s", text)
+	}
+	if idxA > idxB {
+		t.Fatalf("expected sorted output (a before b), got:\n%s", text)
 	}
 }

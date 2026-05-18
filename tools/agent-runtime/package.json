@@ -4,6 +4,6 @@
   "version": "0.0.0",
   "description": "Pinned agent runtime dependencies for autonomous GitHub Actions repair loops.",
   "devDependencies": {
-    "@openai/codex": "0.130.0"
+    "@openai/codex": "0.131.0"
   }
 }
