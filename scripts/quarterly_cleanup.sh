@@ -59,11 +59,13 @@ write_prompt() {
     echo "- Keep GitHub Actions least-privilege and public-repo safe."
     echo "- Preserve the normal agentic update loop and the separate final static infra loop."
     echo "- Add or update ADRs for every durable cleanup, workflow, dependency, or test strategy decision."
+    echo "- Do not modify .github/workflows files with the default GitHub token; workflow-file changes require a separate reviewed maintainer PR."
     echo
     echo "Do not:"
     echo "- Remove tests, smoke checks, ADR guards, or real Polaris static coverage to get green."
     echo "- Print secrets or tokens."
     echo "- Broaden workflow permissions casually."
+    echo "- Edit .github/workflows files from this autonomous cleanup loop."
     echo "- Hand-edit generated files instead of fixing the generator."
     echo
     echo "Success condition:"

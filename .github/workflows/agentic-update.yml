@@ -85,9 +85,34 @@ jobs:
             agentic
             polaris
             terraform-provider
-      - name: Enable auto-merge
+          add-paths: |
+            .editorconfig
+            .gitattributes
+            .gitignore
+            .release-please-manifest.json
+            AGENTS.md
+            CHANGELOG.md
+            CODE_OF_CONDUCT.md
+            CONTRIBUTING.md
+            LICENSE
+            Makefile
+            MAINTAINERS.md
+            README.md
+            SECURITY.md
+            SUPPORT.md
+            cmd/**
+            docs/**
+            examples/**
+            go.mod
+            go.sum
+            internal/**
+            main.go
+            release-please-config.json
+            scripts/**
+            specs/**
+            tools/**
+      - name: Try to enable auto-merge
         if: ${{ steps.cpr.outputs.pull-request-number != '' && vars.DISABLE_AUTOMERGE != 'true' }}
-        uses: peter-evans/enable-pull-request-automerge@a660677d5469627102a1c1e11409dd063606628d # v3
-        with:
-          pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
-          merge-method: squash
+        env:
+          PR_NUMBER: ${{ steps.cpr.outputs.pull-request-number }}
+        run: scripts/try_enable_automerge.sh "${PR_NUMBER}" SQUASH

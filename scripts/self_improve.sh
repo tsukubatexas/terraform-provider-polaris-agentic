@@ -46,12 +46,14 @@ write_prompt() {
     echo "- Keep external GitHub Actions pinned to full commit SHAs and keep scripts/check_actions_pinned.sh green."
     echo "- Preserve weekly Polaris update, test catalog, auto PR, auto merge, Release Please and monthly release train behavior."
     echo "- Keep PR commit messages compatible with Conventional Commits so Release Please can calculate SemVer."
+    echo "- Do not modify .github/workflows files with the default GitHub token; workflow-file changes require a separate reviewed maintainer PR."
     echo "- Run make generate fmt test build."
     echo
     echo "Do not:"
     echo "- Print secrets."
     echo "- Disable tests or security workflows."
     echo "- Make broad write permissions global when job-level permissions are enough."
+    echo "- Edit .github/workflows files from this autonomous self-improvement loop."
     echo "- Hand-edit generated provider output except by changing generator inputs/code."
     echo
     echo "Current checks:"
