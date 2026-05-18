@@ -27,6 +27,7 @@ Add open source and security hardening:
 - Install container package prerequisites before actions that need them, such as Terraform setup requiring `unzip`.
 - Suppress Shellcheck's indirect-trap unreachable warning only for the trap cleanup function.
 - Disable Go VCS stamping for provider binaries so container and release builds stay reproducible without depending on a writable Git checkout.
+- Mark GitHub container workspaces as safe Git directories before running repository-diff guards.
 - Configure the GitHub repository for Dependabot alerts, automatic security fixes, secret scanning, push protection, squash merges, branch deletion after merge, topics, and branch protection.
 
 ## Consequences
