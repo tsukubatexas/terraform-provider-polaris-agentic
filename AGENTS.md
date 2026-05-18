@@ -14,3 +14,5 @@ Rules:
 - Prefer small, reviewable provider behavior over pretending every REST endpoint maps perfectly to first-class Terraform state.
 - This is intended to be a public repo. Never print secrets, never broaden workflow permissions casually, and keep generated/provider changes reviewable.
 - If newer Codex CLI, GitHub Action versions or Go tooling are available, update them through pinned dependencies and keep all checks green.
+- Record durable technical decisions, Polaris runtime findings, workflow constraints, and test strategy changes in `docs/adr/`. If a new release changes generated operations or real Polaris behavior, add or update an ADR in the same pull request.
+- Agentic-relevant changes must satisfy `scripts/check_adr_updates.sh`; do not bypass it. Add a short ADR instead.

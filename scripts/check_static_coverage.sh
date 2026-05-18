@@ -8,7 +8,14 @@ if git diff --quiet -- internal/generated/operations_gen.go docs/generated-opera
   exit 0
 fi
 
-if ! git diff --quiet -- scripts/test_catalog.sh examples/test-catalog; then
+static_coverage_changes="$(
+  {
+    git diff --name-only -- scripts/test_catalog.sh examples/test-catalog
+    git ls-files --others --exclude-standard -- scripts/test_catalog.sh examples/test-catalog
+  } | sort -u
+)"
+
+if [[ -n "${static_coverage_changes}" ]]; then
   exit 0
 fi
 

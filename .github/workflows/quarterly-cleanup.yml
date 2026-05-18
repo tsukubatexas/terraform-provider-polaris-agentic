@@ -1,0 +1,76 @@
+name: Quarterly Cleanup Build
+
+on:
+  schedule:
+    - cron: "19 3 1 */3 *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  quarterly-cleanup:
+    runs-on: ubuntu-latest
+    container: golang:1.23-bookworm
+    timeout-minutes: 120
+    services:
+      polaris:
+        image: apache/polaris:latest
+        env:
+          POLARIS_BOOTSTRAP_CREDENTIALS: POLARIS,root,s3cr3t
+        ports:
+          - 8181:8181
+    env:
+      POLARIS_INFRA_MODE: service
+      POLARIS_ENDPOINT: http://polaris:8181/api/management/v1
+      POLARIS_REALM: POLARIS
+      POLARIS_ROOT_CLIENT_ID: root
+      POLARIS_ROOT_CLIENT_SECRET: s3cr3t
+      AGENT_MAX_ROUNDS: ${{ vars.QUARTERLY_AGENT_MAX_ROUNDS || vars.AGENT_MAX_ROUNDS || '4' }}
+      AGENT_MODEL: ${{ vars.AGENT_MODEL || 'gpt-5.2' }}
+      AGENT_REPAIR_COMMAND: ${{ vars.AGENT_REPAIR_COMMAND }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+      - run: apt-get update && apt-get install -y --no-install-recommends curl jq unzip ca-certificates git
+      - run: go mod download
+      - run: npm --prefix tools/agent-runtime install
+      - name: Run quarterly cleanup loop
+        run: scripts/quarterly_cleanup.sh
+      - name: Run final static infra loop
+        run: scripts/agentic_infra_loop.sh
+      - name: Create pull request
+        id: cpr
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: agentic/quarterly-cleanup
+          title: "Quarterly cleanup and hardening"
+          commit-message: "Run quarterly cleanup and hardening"
+          body: |
+            Quarterly autonomous cleanup and hardening pass.
+
+            The workflow ran:
+            - dependency and lockfile cleanup
+            - `make generate`
+            - `make fmt`
+            - `make test`
+            - `make build`
+            - ADR and static coverage guards
+            - final static real-Polaris infra loop
+          labels: |
+            agentic
+            cleanup
+            hardening
+      - name: Enable auto-merge
+        if: ${{ steps.cpr.outputs.pull-request-number != '' && vars.DISABLE_AUTOMERGE != 'true' }}
+        uses: peter-evans/enable-pull-request-automerge@v3
+        with:
+          pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
+          merge-method: squash

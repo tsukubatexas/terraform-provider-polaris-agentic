@@ -76,6 +76,10 @@ Force a specific Polaris release:
 POLARIS_RELEASE=apache-polaris-1.4.1 make generate
 ```
 
+## Architecture Decisions
+
+Durable architecture decisions and Polaris runtime findings are tracked in [docs/adr](docs/adr/README.md). New autonomous changes must add or update ADRs when they discover new Polaris behavior, change workflow policy, or change how the real-Polaris static gate works. `scripts/check_adr_updates.sh` enforces this for agentic-relevant files.
+
 ## Weekly Agentic Update
 
 The workflow `.github/workflows/agentic-update.yml` runs every Monday in a `golang:1.23-bookworm` container.
@@ -106,6 +110,7 @@ That is enough for the repo to run as a self-maintaining public project:
 - weekly Polaris OpenAPI update
 - agentic repair loop
 - test-catalog check
+- quarterly cleanup and hardening build
 - auto PR
 - auto-merge when checks pass
 - release artifacts after merge

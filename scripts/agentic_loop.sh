@@ -51,6 +51,7 @@ write_prompt() {
     echo "- Prefer deterministic generator fixes over hand-editing generated output."
     echo "- Maintain public-repo hardening: least privilege GitHub permissions, no secrets in logs, no broad workflow permissions."
     echo "- If tooling is stale, update pinned tooling intentionally and keep CI green."
+    echo "- Add or update docs/adr records for durable decisions, new Polaris release behavior, workflow constraints, or test strategy changes."
     echo "- Run: make generate fmt test build."
     echo "- Stop only when all checks are green."
     echo

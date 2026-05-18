@@ -85,6 +85,7 @@ run_static_infra_checks() {
     make test &&
     make build &&
     bash -n scripts/*.sh &&
+    scripts/check_adr_updates.sh &&
     scripts/check_static_coverage.sh &&
     scripts/test_catalog.sh || return $?
 
@@ -129,7 +130,8 @@ write_prompt() {
     echo "- Fix provider code, generator code, examples, or test scripts until the static infra check is green."
     echo "- If a new Polaris release changes generated operations, extend the static infra examples/checks so the new release capability is exercised against real Polaris before declaring success."
     echo "- Prefer evolving examples/test-catalog and scripts/test_catalog.sh as the durable final gate, not adding one-off checks only in this prompt."
-    echo "- The success condition is: make generate fmt test build, bash -n scripts/*.sh, scripts/check_static_coverage.sh, and scripts/test_catalog.sh."
+    echo "- Add or update docs/adr records for any new Polaris runtime behavior, release compatibility finding, or static coverage decision."
+    echo "- The success condition is: make generate fmt test build, bash -n scripts/*.sh, scripts/check_adr_updates.sh, scripts/check_static_coverage.sh, and scripts/test_catalog.sh."
     echo
     echo "Recent failure log:"
     echo
