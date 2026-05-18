@@ -110,6 +110,8 @@ That keeps weekly Polaris changes visible to Release Please without publishing a
 
 Releases are managed by Release Please instead of synthetic run-number tags.
 
+The detailed operating guide is in [docs/release/README.md](docs/release/README.md).
+
 ```text
 Weekly:
   - Agentic update PRs land as Conventional Commits.
