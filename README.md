@@ -1,23 +1,23 @@
-# Agentic Terraform Provider for Apache Polaris
+# Terraform Provider for Apache Polaris
 
 [![CI](https://github.com/tsukubatexas/terraform-provider-polaris-agentic/actions/workflows/ci.yml/badge.svg)](https://github.com/tsukubatexas/terraform-provider-polaris-agentic/actions/workflows/ci.yml)
 [![Security](https://github.com/tsukubatexas/terraform-provider-polaris-agentic/actions/workflows/security.yml/badge.svg)](https://github.com/tsukubatexas/terraform-provider-polaris-agentic/actions/workflows/security.yml)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/tsukubatexas/terraform-provider-polaris-agentic/badge)](https://scorecard.dev/viewer/?uri=github.com/tsukubatexas/terraform-provider-polaris-agentic)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-This repo is a local scaffold for an autonomous Terraform provider workflow.
+Terraform provider for managing Apache Polaris catalogs and REST API resources.
 
-It checks Apache Polaris weekly, fetches the newest OpenAPI specs from the latest GitHub release, regenerates provider operation metadata, runs tests, and can start a GenAI repair loop until the provider is green.
+Autonomous update workflows track new Apache Polaris OpenAPI releases, refresh provider metadata, run real Polaris tests, and prepare pull requests.
 
 ## What It Builds
 
-- A Go Terraform provider.
-- A generated registry of all known Polaris REST OpenAPI operations.
+- A Go Terraform provider published as `tsukubatexas/polaris`.
+- A generated registry of Apache Polaris REST OpenAPI operations.
 - A generic `polaris_rest_call` data source for GET/read-style calls.
 - A generic `polaris_rest_resource` resource for create/read/update/delete workflows backed by OpenAPI `operationId`s.
-- A weekly GitHub Action that opens a pull request when Polaris changes.
-- An agentic loop that can run Codex CLI or any other GenAI CLI.
-- Release Please tracking with a monthly controlled release train.
+- A real Polaris catalog smoke test that applies and destroys Terraform against a running Polaris service.
+- Automated OpenAPI tracking, provider regeneration, and PR preparation when Polaris changes.
+- Release Please tracking with a controlled monthly release train.
 
 ## Why Generic First?
 
@@ -28,7 +28,7 @@ So this repo does the honest enterprise thing:
 ```text
 OpenAPI generates the operation inventory.
 The generic resource can call every endpoint.
-The agent loop can promote important endpoints into typed resources over time.
+The maintenance loop can promote important endpoints into typed resources over time.
 Tests must stay green before a PR is opened.
 ```
 
@@ -41,7 +41,7 @@ make test
 make build
 ```
 
-Test the autonomous loop locally without spending API calls:
+Test the autonomous maintenance loop locally without spending API calls:
 
 ```bash
 scripts/smoke_agentic_loop.sh
@@ -74,7 +74,7 @@ Run the final static infra loop locally:
 POLARIS_INFRA_MODE=docker scripts/agentic_infra_loop.sh
 ```
 
-In GitHub Actions the weekly agentic update first runs the normal provider update loop. After that, a separate final static infra loop runs against a Polaris service container. If the final apply/destroy check fails, that final loop calls the repair agent and starts over until the basic functionality is green. When a new Polaris release changes generated operations, `scripts/check_static_coverage.sh` fails unless `scripts/test_catalog.sh` or `examples/test-catalog` were extended too.
+In GitHub Actions the weekly provider update first regenerates the provider metadata. After that, a separate final static infra loop runs against a Polaris service container. If the final apply/destroy check fails, that final loop calls the repair agent and starts over until the basic functionality is green. When a new Polaris release changes generated operations, `scripts/check_static_coverage.sh` fails unless `scripts/test_catalog.sh` or `examples/test-catalog` were extended too.
 
 Force a specific Polaris release:
 
@@ -84,9 +84,9 @@ POLARIS_RELEASE=apache-polaris-1.4.1 make generate
 
 ## Architecture Decisions
 
-Durable architecture decisions and Polaris runtime findings are tracked in [docs/adr](docs/adr/README.md). New autonomous changes must add or update ADRs when they discover new Polaris behavior, change workflow policy, or change how the real-Polaris static gate works. `scripts/check_adr_updates.sh` enforces this for agentic-relevant files.
+Durable architecture decisions and Polaris runtime findings are tracked in [docs/adr](docs/adr/README.md). New maintenance changes must add or update ADRs when they discover new Polaris behavior, change workflow policy, or change how the real-Polaris static gate works. `scripts/check_adr_updates.sh` enforces this for automation-relevant files.
 
-## Weekly Agentic Update
+## Automated Provider Updates
 
 The workflow `.github/workflows/agentic-update.yml` runs every Monday in a `golang:1.24-bookworm` container.
 
@@ -119,7 +119,7 @@ The detailed operating guide is in [docs/release/README.md](docs/release/README.
 
 ```text
 Weekly:
-  - Agentic update PRs land as Conventional Commits.
+  - Provider update PRs land as Conventional Commits.
   - Release Please opens or updates the release PR.
   - CHANGELOG.md and .release-please-manifest.json show what the next release will contain.
 
@@ -137,7 +137,7 @@ Use `feat:` for provider capability changes, `fix:` for bug fixes and `feat!:` o
 
 ## One-Time Setup
 
-For agentic repair mode, set one repository secret:
+For autonomous repair mode, set one repository secret:
 
 ```text
 Secret: OPENAI_API_KEY
@@ -146,7 +146,7 @@ Secret: OPENAI_API_KEY
 That is enough for weekly provider maintenance:
 
 - weekly Polaris OpenAPI update
-- agentic repair loop
+- optional GenAI repair loop
 - test-catalog check
 - quarterly cleanup and hardening build
 - auto PR
@@ -282,4 +282,4 @@ Specs are fetched from the release tag, including:
 - `spec/iceberg-rest-catalog-open-api.yaml`
 - `spec/polaris-catalog-apis/*.yaml`
 
-As of this scaffold, GitHub reports latest release `apache-polaris-1.4.1`.
+As of this provider snapshot, GitHub reports latest release `apache-polaris-1.4.1`.
