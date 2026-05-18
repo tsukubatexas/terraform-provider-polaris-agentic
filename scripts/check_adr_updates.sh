@@ -23,7 +23,7 @@ changed_files="$(
     git diff --name-only
     git ls-files --others --exclude-standard
   } |
-    grep -v '^tools/agent-runtime/node_modules/' |
+    { grep -v '^tools/agent-runtime/node_modules/' || true; } |
     sort -u
 )"
 if [[ -z "${changed_files}" ]]; then
