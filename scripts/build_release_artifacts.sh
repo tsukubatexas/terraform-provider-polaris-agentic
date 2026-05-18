@@ -26,6 +26,7 @@ for target in linux_amd64 linux_arm64 darwin_amd64 darwin_arm64; do
   work="${out_dir}/${target}"
   mkdir -p "${work}"
   GOOS="${os}" GOARCH="${arch}" go build \
+    -buildvcs=false \
     -ldflags "-X main.version=${version}" \
     -o "${work}/terraform-provider-polaris_v${version}" .
   (
