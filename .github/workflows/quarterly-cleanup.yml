@@ -32,6 +32,7 @@ jobs:
       AGENT_REPAIR_COMMAND: ${{ vars.AGENT_REPAIR_COMMAND }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       GITHUB_TOKEN: ${{ github.token }}
+      CODEX_HOME: /tmp/codex
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
@@ -46,6 +47,11 @@ jobs:
           terraform_wrapper: false
       - run: go mod download
       - run: npm --prefix tools/agent-runtime install
+      - name: Authenticate Codex runtime
+        if: ${{ env.OPENAI_API_KEY != '' }}
+        run: |
+          mkdir -p "${CODEX_HOME}"
+          printenv OPENAI_API_KEY | npm --prefix tools/agent-runtime exec -- codex login -c 'cli_auth_credentials_store="file"' --with-api-key
       - name: Run quarterly cleanup loop
         run: scripts/quarterly_cleanup.sh
       - name: Run final static infra loop

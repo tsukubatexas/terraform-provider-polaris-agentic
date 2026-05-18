@@ -23,6 +23,8 @@ Harden the production gates:
 - Run release-matrix generation against a temporary spec cache so compatibility tests do not leave old release specs in the normal repository cache.
 - Pass the job-scoped `GITHUB_TOKEN` to generator workflows so GitHub release and raw spec fetches use authenticated rate limits without adding new secrets.
 - Keep the default Codex CLI command aligned with the pinned `@openai/codex` exec syntax.
+- Ignore installed `tools/agent-runtime/node_modules` content in ADR guards because it is an ephemeral install artifact, not a durable repo decision.
+- Authenticate the pinned Codex CLI with the repo secret before non-interactive scheduled agent runs, storing the temporary login cache under `CODEX_HOME` inside the runner.
 - Build release artifacts before pushing a release tag and require no generated diff before release.
 - Run shell and GitHub Actions linters in CI.
 - Run every agentic maintenance smoke test in CI, including the provider update loop, final infra repair loop, repair command PATH handling, quarterly cleanup loop, self-improvement loop, and release matrix smoke.
@@ -39,6 +41,8 @@ Harden the production gates:
 - Release-matrix smoke runs remain deterministic and do not pollute the working tree with historical spec caches.
 - Scheduled generator jobs avoid unauthenticated GitHub API limits while still using the least-privilege workflow token.
 - Pinned agent runtime updates can require CLI flag updates in the maintenance scripts.
+- ADR enforcement remains strict for runtime lockfiles and package metadata but no longer mistakes installed dependencies for source changes.
+- Codex credentials are initialized per job and remain outside the repository checkout.
 - CI takes a little longer, but failures in autonomous maintenance workflows are caught before merge instead of in scheduled jobs.
 - Scheduled repair jobs keep the Node and Codex runtime installed by the workflow visible to the agent subprocess.
 - Operators can manually exercise every scheduled workflow after hardening changes instead of waiting for the next cron window.

@@ -93,14 +93,22 @@ jobs:
         id: merge
         if: ${{ steps.find.outputs.found == 'true' }}
         run: |
-          gh pr merge "${{ steps.find.outputs.number }}" \
-            --repo "${GITHUB_REPOSITORY}" \
-            --squash \
-            --auto \
-            --delete-branch \
-            --match-head-commit "${{ steps.find.outputs.head_sha }}" \
-            --subject "${{ steps.find.outputs.title }}" \
-            --body "Monthly controlled release train."
+          if ! merge_output="$(gh pr merge "${{ steps.find.outputs.number }}" \
+              --repo "${GITHUB_REPOSITORY}" \
+              --squash \
+              --auto \
+              --delete-branch \
+              --match-head-commit "${{ steps.find.outputs.head_sha }}" \
+              --subject "${{ steps.find.outputs.title }}" \
+              --body "Monthly controlled release train." 2>&1)"; then
+            echo "${merge_output}"
+            if grep -Eq "Auto merge is not allowed|base branch policy prohibits" <<<"${merge_output}"; then
+              echo "merged=false" >> "${GITHUB_OUTPUT}"
+              echo "Release PR is validated, but branch protection or repository settings require a human merge."
+              exit 0
+            fi
+            exit 1
+          fi
           sleep 10
           state="$(gh pr view "${{ steps.find.outputs.number }}" \
             --repo "${GITHUB_REPOSITORY}" \
