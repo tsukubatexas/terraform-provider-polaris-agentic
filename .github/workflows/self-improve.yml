@@ -12,7 +12,7 @@ permissions:
 jobs:
   self-improve:
     runs-on: ubuntu-latest
-    container: golang:1.23-bookworm
+    container: golang:1.24-bookworm
     timeout-minutes: 90
     env:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}

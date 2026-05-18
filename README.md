@@ -88,7 +88,7 @@ Durable architecture decisions and Polaris runtime findings are tracked in [docs
 
 ## Weekly Agentic Update
 
-The workflow `.github/workflows/agentic-update.yml` runs every Monday in a `golang:1.23-bookworm` container.
+The workflow `.github/workflows/agentic-update.yml` runs every Monday in a `golang:1.24-bookworm` container.
 
 It does:
 

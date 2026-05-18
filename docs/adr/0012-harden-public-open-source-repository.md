@@ -21,6 +21,7 @@ Add open source and security hardening:
 - Add Dependency Review for pull requests.
 - Add `.editorconfig` and `.gitattributes` for consistent public contributions.
 - Document the hardening model in `docs/security-hardening.md`.
+- Upgrade the vulnerable transitive `google.golang.org/grpc` dependency to a patched release and move CI containers to Go 1.24.
 - Configure the GitHub repository for Dependabot alerts, automatic security fixes, secret scanning, push protection, squash merges, branch deletion after merge, topics, and branch protection.
 
 ## Consequences

@@ -12,7 +12,7 @@ permissions:
 jobs:
   test-catalog:
     runs-on: ubuntu-latest
-    container: golang:1.23-bookworm
+    container: golang:1.24-bookworm
     services:
       polaris:
         image: apache/polaris:latest
