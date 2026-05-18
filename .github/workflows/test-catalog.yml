@@ -25,6 +25,7 @@ jobs:
       POLARIS_REALM: POLARIS
       POLARIS_ROOT_CLIENT_ID: root
       POLARIS_ROOT_CLIENT_SECRET: s3cr3t
+      GITHUB_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
       - run: git config --global --add safe.directory "$GITHUB_WORKSPACE"

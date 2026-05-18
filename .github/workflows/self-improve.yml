@@ -19,6 +19,7 @@ jobs:
       AGENT_MODEL: ${{ vars.AGENT_MODEL || 'gpt-5.2' }}
       AGENT_MAX_ROUNDS: ${{ vars.AGENT_MAX_ROUNDS || '5' }}
       AGENT_REPAIR_COMMAND: ${{ vars.AGENT_REPAIR_COMMAND }}
+      GITHUB_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:

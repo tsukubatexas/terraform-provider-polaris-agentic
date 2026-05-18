@@ -17,6 +17,7 @@ jobs:
     timeout-minutes: 120
     env:
       GH_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN || github.token }}
+      GITHUB_TOKEN: ${{ github.token }}
     steps:
       - name: Prepare release PR
         uses: googleapis/release-please-action@5c625bfb5d1ff62eadeeb3772007f7f66fdcf071 # v4
@@ -88,19 +89,32 @@ jobs:
           actionlint_bin="$(go env GOPATH)/bin/actionlint"
           "${actionlint_bin}" -color=false .github/workflows/*.yml
           scripts/agentic_infra_loop.sh
-      - name: Merge release PR
+      - name: Merge or queue release PR
+        id: merge
         if: ${{ steps.find.outputs.found == 'true' }}
         run: |
           gh pr merge "${{ steps.find.outputs.number }}" \
+            --repo "${GITHUB_REPOSITORY}" \
             --squash \
+            --auto \
             --delete-branch \
             --match-head-commit "${{ steps.find.outputs.head_sha }}" \
             --subject "${{ steps.find.outputs.title }}" \
             --body "Monthly controlled release train."
           sleep 10
+          state="$(gh pr view "${{ steps.find.outputs.number }}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --json state \
+            --jq '.state')"
+          if [[ "${state}" == "MERGED" ]]; then
+            echo "merged=true" >> "${GITHUB_OUTPUT}"
+          else
+            echo "merged=false" >> "${GITHUB_OUTPUT}"
+            echo "Release PR is validated and queued for auto-merge; publishing waits for branch protection."
+          fi
       - name: Publish GitHub release
         id: publish
-        if: ${{ steps.find.outputs.found == 'true' }}
+        if: ${{ steps.find.outputs.found == 'true' && steps.merge.outputs.merged == 'true' }}
         uses: googleapis/release-please-action@5c625bfb5d1ff62eadeeb3772007f7f66fdcf071 # v4
         with:
           token: ${{ secrets.RELEASE_PLEASE_TOKEN || github.token }}

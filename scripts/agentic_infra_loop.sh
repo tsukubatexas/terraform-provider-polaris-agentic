@@ -19,7 +19,7 @@ mkdir -p "${WORK_DIR}"
 
 default_codex_command() {
   if [[ -n "${OPENAI_API_KEY:-}" ]]; then
-    printf 'npx --prefix tools/agent-runtime codex exec --dangerously-bypass-approvals-and-sandbox -a never --search -m %q -C %q -o %q -' "${AGENT_MODEL}" "${ROOT_DIR}" "${LAST_MESSAGE}"
+    printf 'npx --prefix tools/agent-runtime codex exec --dangerously-bypass-approvals-and-sandbox -m %q -C %q -o %q -' "${AGENT_MODEL}" "${ROOT_DIR}" "${LAST_MESSAGE}"
   fi
 }
 
