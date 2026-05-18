@@ -20,10 +20,12 @@ Harden the production gates:
 - Truncate HTTP response bodies in provider error messages.
 - Build release artifacts before pushing a release tag and require no generated diff before release.
 - Run shell and GitHub Actions linters in CI.
+- Run every agentic maintenance smoke test in CI, including the provider update loop, final infra repair loop, quarterly cleanup loop, self-improvement loop, and release matrix smoke.
 
 ## Consequences
 
 - Pull requests are more likely to fail early when they miss ADRs or real static coverage updates.
 - Release tags are not pushed until the provider has generated, tested, and built successfully.
 - Some custom-header edge cases become stricter, intentionally favoring provider-managed authentication and realm headers.
+- CI takes a little longer, but failures in autonomous maintenance workflows are caught before merge instead of in scheduled jobs.
 - Future hardening changes should update this ADR or create a new one if they change the policy.
