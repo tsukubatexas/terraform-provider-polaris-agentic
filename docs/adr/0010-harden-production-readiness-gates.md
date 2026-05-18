@@ -18,14 +18,24 @@ Harden the production gates:
 - Protect provider-owned headers such as `Authorization`, `Polaris-Realm`, and `User-Agent` from accidental override by custom headers.
 - Validate explicit HTTP methods before issuing requests.
 - Truncate HTTP response bodies in provider error messages.
+- Retry transient generator HTTP fetch failures so release-matrix validation is resilient to short GitHub or raw spec fetch interruptions.
+- Treat release metadata-only generator updates separately from operation registry changes so static coverage grows only when the provider surface changes.
+- Run release-matrix generation against a temporary spec cache so compatibility tests do not leave old release specs in the normal repository cache.
 - Build release artifacts before pushing a release tag and require no generated diff before release.
 - Run shell and GitHub Actions linters in CI.
-- Run every agentic maintenance smoke test in CI, including the provider update loop, final infra repair loop, quarterly cleanup loop, self-improvement loop, and release matrix smoke.
+- Run every agentic maintenance smoke test in CI, including the provider update loop, final infra repair loop, repair command PATH handling, quarterly cleanup loop, self-improvement loop, and release matrix smoke.
+- Run autonomous repair commands in non-login shells so GitHub Actions container PATH updates from setup steps remain available to nested agent commands.
+- Keep scheduled security and scorecard workflows manually dispatchable so their scheduled paths can be verified on demand.
 
 ## Consequences
 
 - Pull requests are more likely to fail early when they miss ADRs or real static coverage updates.
 - Release tags are not pushed until the provider has generated, tested, and built successfully.
 - Some custom-header edge cases become stricter, intentionally favoring provider-managed authentication and realm headers.
+- Generator runs may take a few seconds longer during transient upstream failures, but scheduled release-matrix checks are less likely to fail from a single network hiccup.
+- New Polaris tags with unchanged operation surfaces can flow without fake static test edits, while new operations still require durable real-Polaris coverage.
+- Release-matrix smoke runs remain deterministic and do not pollute the working tree with historical spec caches.
 - CI takes a little longer, but failures in autonomous maintenance workflows are caught before merge instead of in scheduled jobs.
+- Scheduled repair jobs keep the Node and Codex runtime installed by the workflow visible to the agent subprocess.
+- Operators can manually exercise every scheduled workflow after hardening changes instead of waiting for the next cron window.
 - Future hardening changes should update this ADR or create a new one if they change the policy.

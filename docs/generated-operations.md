@@ -1,6 +1,6 @@
 # Generated Polaris Operations
 
-Release: `apache-polaris-1.4.1`
+Release: `apache-polaris-1.5.0`
 
 | Operation ID | Method | Path | Spec |
 | --- | --- | --- | --- |

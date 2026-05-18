@@ -11,7 +11,7 @@ type Operation struct {
 	Tags    []string
 }
 
-var ReleaseTag = "apache-polaris-1.4.1"
+var ReleaseTag = "apache-polaris-1.5.0"
 
 var GeneratedAt = "reproducible"
 

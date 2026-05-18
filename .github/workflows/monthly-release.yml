@@ -33,6 +33,7 @@ jobs:
         id: find
         run: |
           pr_json="$(gh pr list \
+            --repo "${GITHUB_REPOSITORY}" \
             --state open \
             --label "autorelease: pending" \
             --json number,headRefName,headRefOid,title,isDraft \

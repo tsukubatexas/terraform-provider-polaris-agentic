@@ -81,7 +81,7 @@ for round in $(seq 1 "${MAX_ROUNDS}"); do
   fi
 
   # shellcheck disable=SC2086
-  ${SHELL:-bash} -lc "${AGENT_REPAIR_COMMAND} < '${PROMPT_FILE}'"
+  ${SHELL:-bash} -c "${AGENT_REPAIR_COMMAND} < '${PROMPT_FILE}'"
 
   if run_checks >"${FAILURE_LOG}" 2>&1; then
     cat "${FAILURE_LOG}"

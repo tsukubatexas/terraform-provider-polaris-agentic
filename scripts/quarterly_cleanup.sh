@@ -23,7 +23,7 @@ AGENT_REPAIR_COMMAND="${AGENT_REPAIR_COMMAND:-$(default_codex_command)}"
 
 run_checks() {
   if [[ -n "${QUARTERLY_CHECK_COMMAND:-}" ]]; then
-    ${SHELL:-bash} -lc "${QUARTERLY_CHECK_COMMAND}"
+    ${SHELL:-bash} -c "${QUARTERLY_CHECK_COMMAND}"
     return
   fi
 
@@ -107,7 +107,7 @@ for round in $(seq 1 "${MAX_ROUNDS}"); do
 
   echo "== Quarterly cleanup round ${round}/${MAX_ROUNDS}: running cleanup agent =="
   # shellcheck disable=SC2086
-  ${SHELL:-bash} -lc "${AGENT_REPAIR_COMMAND} < '${PROMPT_FILE}'"
+  ${SHELL:-bash} -c "${AGENT_REPAIR_COMMAND} < '${PROMPT_FILE}'"
 
   echo "== Quarterly cleanup round ${round}/${MAX_ROUNDS}: checks =="
   if run_checks >"${FAILURE_LOG}" 2>&1; then

@@ -94,7 +94,7 @@ for round in $(seq 1 "${MAX_ROUNDS}"); do
 
   echo "== Round ${round}/${MAX_ROUNDS}: running repair agent =="
   # shellcheck disable=SC2086
-  ${SHELL:-bash} -lc "${AGENT_REPAIR_COMMAND} < '${PROMPT_FILE}'"
+  ${SHELL:-bash} -c "${AGENT_REPAIR_COMMAND} < '${PROMPT_FILE}'"
 done
 
 echo "Agentic loop reached ${MAX_ROUNDS} rounds without green checks." >&2

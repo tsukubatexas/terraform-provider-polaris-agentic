@@ -77,7 +77,7 @@ cleanup_infra() {
 
 run_static_infra_checks() {
   if [[ -n "${AGENTIC_INFRA_CHECK_COMMAND:-}" ]]; then
-    ${SHELL:-bash} -lc "${AGENTIC_INFRA_CHECK_COMMAND}"
+    ${SHELL:-bash} -c "${AGENTIC_INFRA_CHECK_COMMAND}"
     return
   fi
 
@@ -176,7 +176,7 @@ for round in $(seq 1 "${MAX_ROUNDS}"); do
 
   echo "== Final infra round ${round}/${MAX_ROUNDS}: running repair agent =="
   # shellcheck disable=SC2086
-  ${SHELL:-bash} -lc "${AGENT_REPAIR_COMMAND} < '${PROMPT_FILE}'"
+  ${SHELL:-bash} -c "${AGENT_REPAIR_COMMAND} < '${PROMPT_FILE}'"
 done
 
 echo "Final infra loop reached ${MAX_ROUNDS} rounds without green checks." >&2

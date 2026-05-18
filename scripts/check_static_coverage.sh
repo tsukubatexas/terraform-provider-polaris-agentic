@@ -28,6 +28,32 @@ if [[ -z "${generated_changes}" ]]; then
   exit 0
 fi
 
+diff_base_generated_lines() {
+  local base_ref="${CHECK_BASE_REF:-}"
+  if [[ -z "${base_ref}" && -n "${GITHUB_BASE_REF:-}" ]]; then
+    base_ref="origin/${GITHUB_BASE_REF}"
+  fi
+
+  if [[ -n "${base_ref}" ]] && git rev-parse --verify "${base_ref}" >/dev/null 2>&1; then
+    local merge_base
+    merge_base="$(git merge-base HEAD "${base_ref}")"
+    git diff --unified=0 "${merge_base}...HEAD" -- internal/generated/operations_gen.go docs/generated-operations.md
+  fi
+}
+
+operation_changes="$(
+  {
+    diff_base_generated_lines
+    git diff --unified=0 -- internal/generated/operations_gen.go docs/generated-operations.md
+  } |
+    sed -n '/^[+-][^+-]/p' |
+    grep -Ev "^[+-](Release: \`[^\`]+\`|var ReleaseTag = \"[^\"]+\")$" || true
+)"
+
+if [[ -z "${operation_changes}" ]]; then
+  exit 0
+fi
+
 static_coverage_changes="$(
   {
     diff_base_files scripts/test_catalog.sh examples/test-catalog
@@ -50,7 +76,7 @@ MSG
 
 echo >&2
 echo "Changed generated operation lines:" >&2
-git diff --unified=0 -- internal/generated/operations_gen.go docs/generated-operations.md 2>/dev/null |
+printf '%s\n' "${operation_changes}" |
   sed -n '/^[+][^+].*/p' |
   head -80 >&2
 
