@@ -24,6 +24,8 @@ Add open source and security hardening:
 - Upgrade the vulnerable transitive `google.golang.org/grpc` dependency to a patched release and move CI containers to Go 1.24.
 - Keep the CI-installed Actionlint version compatible with the Go toolchain used in container jobs.
 - Keep workflow-level permissions read-only so OpenSSF Scorecard can verify and publish results.
+- Install container package prerequisites before actions that need them, such as Terraform setup requiring `unzip`.
+- Suppress Shellcheck's indirect-trap unreachable warning only for the trap cleanup function.
 - Configure the GitHub repository for Dependabot alerts, automatic security fixes, secret scanning, push protection, squash merges, branch deletion after merge, topics, and branch protection.
 
 ## Consequences

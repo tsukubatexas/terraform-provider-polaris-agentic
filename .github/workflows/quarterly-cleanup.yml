@@ -38,10 +38,10 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: "22"
+      - run: apt-get update && apt-get install -y --no-install-recommends curl jq unzip ca-certificates git
       - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3
         with:
           terraform_wrapper: false
-      - run: apt-get update && apt-get install -y --no-install-recommends curl jq unzip ca-certificates git
       - run: go mod download
       - run: npm --prefix tools/agent-runtime install
       - name: Run quarterly cleanup loop
