@@ -12,14 +12,9 @@ FAILURE_LOG="${WORK_DIR}/quarterly-cleanup-failure.log"
 LAST_MESSAGE="${WORK_DIR}/quarterly-cleanup-last-message.md"
 
 mkdir -p "${WORK_DIR}"
+source "${ROOT_DIR}/scripts/agent_loop_lib.sh"
 
-default_codex_command() {
-  if [[ -n "${OPENAI_API_KEY:-}" ]]; then
-    printf 'npx --prefix tools/agent-runtime codex exec --dangerously-bypass-approvals-and-sandbox -m %q -C %q -o %q -' "${AGENT_MODEL}" "${ROOT_DIR}" "${LAST_MESSAGE}"
-  fi
-}
-
-AGENT_REPAIR_COMMAND="${AGENT_REPAIR_COMMAND:-$(default_codex_command)}"
+AGENT_REPAIR_COMMAND="${AGENT_REPAIR_COMMAND:-$(agent_default_codex_command "${AGENT_MODEL}" "${ROOT_DIR}" "${LAST_MESSAGE}")}"
 
 run_checks() {
   if [[ -n "${QUARTERLY_CHECK_COMMAND:-}" ]]; then
@@ -29,10 +24,7 @@ run_checks() {
 
   go mod tidy &&
     npm --prefix tools/agent-runtime install --package-lock-only &&
-    make generate &&
-    make fmt &&
-    make test &&
-    make build &&
+    make generate fmt test build &&
     bash -n scripts/*.sh &&
     scripts/check_adr_updates.sh &&
     scripts/check_static_coverage.sh || return $?

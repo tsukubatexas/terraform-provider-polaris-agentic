@@ -13,20 +13,12 @@ FAILURE_LOG="${WORK_DIR}/failure.log"
 LAST_MESSAGE="${WORK_DIR}/last-message.md"
 
 mkdir -p "${WORK_DIR}"
+source "${ROOT_DIR}/scripts/agent_loop_lib.sh"
 
-default_codex_command() {
-  if [[ -n "${OPENAI_API_KEY:-}" ]]; then
-    printf 'npx --prefix tools/agent-runtime codex exec --dangerously-bypass-approvals-and-sandbox -m %q -C %q -o %q -' "${AGENT_MODEL}" "${ROOT_DIR}" "${LAST_MESSAGE}"
-  fi
-}
-
-AGENT_REPAIR_COMMAND="${AGENT_REPAIR_COMMAND:-$(default_codex_command)}"
+AGENT_REPAIR_COMMAND="${AGENT_REPAIR_COMMAND:-$(agent_default_codex_command "${AGENT_MODEL}" "${ROOT_DIR}" "${LAST_MESSAGE}")}"
 
 run_checks() {
-  make generate POLARIS_RELEASE="${POLARIS_RELEASE}" &&
-    make fmt &&
-    make test &&
-    make build || return $?
+  POLARIS_RELEASE="${POLARIS_RELEASE}" make generate fmt test build || return $?
 
   return 0
 }
