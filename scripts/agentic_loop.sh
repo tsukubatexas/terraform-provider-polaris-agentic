@@ -26,7 +26,9 @@ run_checks() {
   make generate POLARIS_RELEASE="${POLARIS_RELEASE}" &&
     make fmt &&
     make test &&
-    make build
+    make build || return $?
+
+  return 0
 }
 
 write_prompt() {

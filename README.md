@@ -39,6 +39,7 @@ Test the autonomous loop locally without spending API calls:
 
 ```bash
 scripts/smoke_agentic_loop.sh
+scripts/smoke_agentic_infra_loop.sh
 scripts/smoke_self_improve_loop.sh
 scripts/smoke_release_matrix.sh
 ```
@@ -61,6 +62,14 @@ scripts/test_catalog.sh
 
 That script builds the provider, installs it into Terraform's local provider mirror as `tsukubatexas/polaris`, fetches a Polaris OAuth token, applies `examples/test-catalog`, and destroys it again. It creates an internal test catalog named `agentic_test` and uses an S3-style test location only for catalog CRUD validation.
 
+Run the final static infra loop locally:
+
+```bash
+POLARIS_INFRA_MODE=docker scripts/agentic_infra_loop.sh
+```
+
+In GitHub Actions the weekly agentic update first runs the normal provider update loop. After that, a separate final static infra loop runs against a Polaris service container. If the final apply/destroy check fails, that final loop calls the repair agent and starts over until the basic functionality is green. When a new Polaris release changes generated operations, `scripts/check_static_coverage.sh` fails unless `scripts/test_catalog.sh` or `examples/test-catalog` were extended too.
+
 Force a specific Polaris release:
 
 ```bash
@@ -78,9 +87,10 @@ It does:
 2. Fetch Polaris OpenAPI specs from that release tag.
 3. Generate operation metadata and docs.
 4. Run fmt, tests and build.
-5. If something fails, call a GenAI repair agent.
-6. Repeat until green or AGENT_MAX_ROUNDS is reached.
-7. Open a pull request with the generated/provider changes.
+5. Run a separate final static infra loop against a real Apache Polaris service container.
+6. If the final infra loop fails, call a GenAI repair agent and rerun it.
+7. Repeat until green or AGENT_MAX_ROUNDS is reached.
+8. Open a pull request with the generated/provider changes.
 ```
 
 ## One-Time Setup
@@ -108,6 +118,7 @@ Optional variables:
 ```text
 AGENT_MODEL = gpt-5.2
 AGENT_MAX_ROUNDS = 5
+POLARIS_INFRA_MODE = service
 DISABLE_AUTOMERGE = true
 AGENT_REPAIR_COMMAND = custom agent command
 ```
