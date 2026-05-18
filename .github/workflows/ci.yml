@@ -19,7 +19,7 @@ jobs:
         with:
           fetch-depth: 0
       - run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
-      - run: apt-get update && apt-get install -y --no-install-recommends shellcheck jq ca-certificates
+      - run: apt-get update && apt-get install -y --no-install-recommends shellcheck curl jq ca-certificates
       - run: go mod download
       - run: go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.11
       - run: shellcheck scripts/*.sh

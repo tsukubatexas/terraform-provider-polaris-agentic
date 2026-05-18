@@ -28,6 +28,7 @@ Add open source and security hardening:
 - Suppress Shellcheck's indirect-trap unreachable warning only for the trap cleanup function.
 - Disable Go VCS stamping for provider binaries so container and release builds stay reproducible without depending on a writable Git checkout.
 - Mark GitHub container workspaces as safe Git directories before running repository-diff guards.
+- Verify pinned GitHub Actions against the referenced action repository so annotated tag object SHAs or unrelated commits cannot pass the local guard.
 - Configure the GitHub repository for Dependabot alerts, automatic security fixes, secret scanning, push protection, squash merges, branch deletion after merge, topics, and branch protection.
 
 ## Consequences
@@ -35,4 +36,5 @@ Add open source and security hardening:
 - Public contributors get a clearer path for issues, pull requests, and security reports.
 - Workflow supply-chain risk is reduced by immutable action references.
 - Maintainers must intentionally update pinned actions.
+- The action-pin guard now needs `curl` and network access in CI and release validation jobs.
 - Branch protection means direct pushes to `main` should become exceptional.
