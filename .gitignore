@@ -1,5 +1,6 @@
 .agent/
 dist/
+tools/agent-runtime/node_modules/
 *.tfstate
 *.tfstate.*
 .terraform/

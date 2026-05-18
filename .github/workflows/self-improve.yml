@@ -39,6 +39,8 @@ jobs:
           printenv OPENAI_API_KEY | npm --prefix tools/agent-runtime exec -- codex login -c 'cli_auth_credentials_store="file"' --with-api-key
       - name: Run self-improvement agent
         run: scripts/self_improve.sh
+      - name: Remove transient agent runtime artifacts
+        run: rm -rf tools/agent-runtime/node_modules
       - name: Create pull request
         id: cpr
         uses: peter-evans/create-pull-request@c5a7806660adbe173f04e3e038b0ccdcd758773c # v6
