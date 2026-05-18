@@ -26,8 +26,8 @@ jobs:
       POLARIS_ROOT_CLIENT_ID: root
       POLARIS_ROOT_CLIENT_SECRET: s3cr3t
     steps:
-      - uses: actions/checkout@v4
-      - uses: hashicorp/setup-terraform@v3
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3
         with:
           terraform_wrapper: false
       - run: apt-get update && apt-get install -y --no-install-recommends curl jq unzip ca-certificates

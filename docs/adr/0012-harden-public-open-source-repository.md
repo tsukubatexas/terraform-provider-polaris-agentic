@@ -1,0 +1,31 @@
+# ADR 0012: Harden Public Open Source Repository
+
+Date: 2026-05-18
+
+Status: Accepted
+
+## Context
+
+The repository is now public. It contains autonomous workflows that can generate code, open pull requests, merge changes, and create releases. A public autonomous repository needs stronger defaults than a private prototype: clear contribution rules, private security reporting, immutable workflow dependencies, branch protection, and visible security signals.
+
+GitHub supports CODEOWNERS for automatic ownership review, branch protection for required reviews/checks, security policies and advisories for vulnerability handling, Dependabot for vulnerable dependencies, and CodeQL/Scorecard for automated security analysis.
+
+## Decision
+
+Add open source and security hardening:
+
+- Add `LICENSE`, `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SUPPORT.md`, and `MAINTAINERS.md`.
+- Add issue templates, pull request template, and CODEOWNERS.
+- Pin external GitHub Actions to full commit SHAs.
+- Add `scripts/check_actions_pinned.sh` and run it in CI and release gates.
+- Add Dependency Review for pull requests.
+- Add `.editorconfig` and `.gitattributes` for consistent public contributions.
+- Document the hardening model in `docs/security-hardening.md`.
+- Configure the GitHub repository for Dependabot alerts, automatic security fixes, secret scanning, push protection, squash merges, branch deletion after merge, topics, and branch protection.
+
+## Consequences
+
+- Public contributors get a clearer path for issues, pull requests, and security reports.
+- Workflow supply-chain risk is reduced by immutable action references.
+- Maintainers must intentionally update pinned actions.
+- Branch protection means direct pushes to `main` should become exceptional.

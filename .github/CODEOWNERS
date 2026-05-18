@@ -1,0 +1,11 @@
+# Default ownership.
+* @tsukubatexas
+
+# Security and release-sensitive paths.
+/.github/ @tsukubatexas
+/scripts/ @tsukubatexas
+/cmd/polaris-provider-gen/ @tsukubatexas
+/internal/provider/ @tsukubatexas
+/release-please-config.json @tsukubatexas
+/.release-please-manifest.json @tsukubatexas
+/SECURITY.md @tsukubatexas

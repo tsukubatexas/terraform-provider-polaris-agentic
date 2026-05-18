@@ -17,3 +17,4 @@ Every ADR should explain the context, the decision, and the consequences. If an 
 | [0009](0009-run-quarterly-cleanup-build.md) | Run a Quarterly Cleanup Build | Accepted |
 | [0010](0010-harden-production-readiness-gates.md) | Harden Production Readiness Gates | Accepted |
 | [0011](0011-use-release-please-monthly-release-train.md) | Use Release Please and a Monthly Release Train | Accepted |
+| [0012](0012-harden-public-open-source-repository.md) | Harden Public Open Source Repository | Accepted |

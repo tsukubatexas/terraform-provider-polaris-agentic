@@ -126,6 +126,8 @@ flowchart TD
 
 Der wichtigste Schutz ist `--match-head-commit`: Gemerged wird nur der Commit, der vorher validiert wurde. Wenn der Release-PR während der Prüfung geändert wird, schlägt der Merge fehl.
 
+Im gehärteten Public-Repo ist `main` geschützt. Der monatliche Workflow kann den Release-PR nur mergen, wenn die Branch-Protection-Regeln erfüllt sind. Falls eine Code-Owner-Freigabe verlangt wird, muss der Release-PR vorher von `@tsukubatexas` genehmigt werden.
+
 ## Release Gate
 
 Vor dem Merge des Release-PRs laufen:

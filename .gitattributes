@@ -1,0 +1,13 @@
+* text=auto eol=lf
+
+*.go text eol=lf
+*.sh text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.tf text eol=lf
+
+specs/** linguist-generated=true
+internal/generated/** linguist-generated=true
+docs/generated-operations.md linguist-generated=true

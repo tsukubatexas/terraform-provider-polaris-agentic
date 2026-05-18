@@ -12,6 +12,7 @@ Rules:
 - Do not delete tests to get green checks.
 - Always run `make generate fmt test build`.
 - Use Conventional Commits for merged changes that should appear in releases. Provider capability updates should normally use `feat(polaris): ...`; bug fixes should use `fix: ...`.
+- Keep external GitHub Actions pinned to full commit SHAs and keep `scripts/check_actions_pinned.sh` green.
 - Prefer small, reviewable provider behavior over pretending every REST endpoint maps perfectly to first-class Terraform state.
 - This is intended to be a public repo. Never print secrets, never broaden workflow permissions casually, and keep generated/provider changes reviewable.
 - If newer Codex CLI, GitHub Action versions or Go tooling are available, update them through pinned dependencies and keep all checks green.

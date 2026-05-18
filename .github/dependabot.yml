@@ -7,9 +7,18 @@ updates:
       day: "monday"
       time: "03:21"
     open-pull-requests-limit: 10
+    commit-message:
+      prefix: "chore(deps)"
+    reviewers:
+      - "tsukubatexas"
     labels:
       - dependencies
       - go
+    groups:
+      go-minor-patch:
+        update-types:
+          - "minor"
+          - "patch"
 
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -18,9 +27,17 @@ updates:
       day: "monday"
       time: "03:31"
     open-pull-requests-limit: 10
+    commit-message:
+      prefix: "ci(deps)"
+    reviewers:
+      - "tsukubatexas"
     labels:
       - dependencies
       - github-actions
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "npm"
     directory: "/tools/agent-runtime"
@@ -29,6 +46,14 @@ updates:
       day: "monday"
       time: "03:41"
     open-pull-requests-limit: 10
+    commit-message:
+      prefix: "chore(deps)"
+    reviewers:
+      - "tsukubatexas"
     labels:
       - dependencies
       - agent
+    groups:
+      agent-runtime:
+        patterns:
+          - "*"

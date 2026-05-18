@@ -19,7 +19,7 @@ jobs:
       GH_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN || github.token }}
     steps:
       - name: Prepare release PR
-        uses: googleapis/release-please-action@v4
+        uses: googleapis/release-please-action@8b8fd2cc23b2e18957157a9d923d75aa0c6f6ad5 # v4
         with:
           token: ${{ secrets.RELEASE_PLEASE_TOKEN || github.token }}
           config-file: release-please-config.json
@@ -54,16 +54,16 @@ jobs:
             echo "head_sha=$(jq -r '.headRefOid' <<<"${pr_json}")"
             echo "title=$(jq -r '.title' <<<"${pr_json}")"
           } >> "${GITHUB_OUTPUT}"
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         if: ${{ steps.find.outputs.found == 'true' }}
         with:
           ref: ${{ steps.find.outputs.head_ref }}
           fetch-depth: 0
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
         if: ${{ steps.find.outputs.found == 'true' }}
         with:
           go-version-file: go.mod
-      - uses: hashicorp/setup-terraform@v3
+      - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3
         if: ${{ steps.find.outputs.found == 'true' }}
         with:
           terraform_wrapper: false
@@ -81,6 +81,7 @@ jobs:
         run: |
           go mod download
           scripts/check_release_please_config.sh
+          scripts/check_actions_pinned.sh
           bash -n scripts/*.sh
           shellcheck scripts/*.sh
           actionlint_bin="$(go env GOPATH)/bin/actionlint"
@@ -99,18 +100,18 @@ jobs:
       - name: Publish GitHub release
         id: publish
         if: ${{ steps.find.outputs.found == 'true' }}
-        uses: googleapis/release-please-action@v4
+        uses: googleapis/release-please-action@8b8fd2cc23b2e18957157a9d923d75aa0c6f6ad5 # v4
         with:
           token: ${{ secrets.RELEASE_PLEASE_TOKEN || github.token }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
           target-branch: ${{ github.event.repository.default_branch }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         if: ${{ steps.publish.outputs.release_created == 'true' }}
         with:
           ref: ${{ steps.publish.outputs.tag_name }}
           fetch-depth: 0
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
         if: ${{ steps.publish.outputs.release_created == 'true' }}
         with:
           go-version-file: go.mod
@@ -125,7 +126,7 @@ jobs:
           scripts/build_release_artifacts.sh "${{ steps.publish.outputs.version }}" dist
       - name: Upload release assets
         if: ${{ steps.publish.outputs.release_created == 'true' }}
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
         with:
           tag_name: ${{ steps.publish.outputs.tag_name }}
           files: |

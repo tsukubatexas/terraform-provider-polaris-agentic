@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     container: golang:1.23-bookworm
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           fetch-depth: 0
       - run: apt-get update && apt-get install -y --no-install-recommends shellcheck jq ca-certificates
@@ -23,6 +23,7 @@ jobs:
       - run: go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.12
       - run: shellcheck scripts/*.sh
       - run: scripts/check_release_please_config.sh
+      - run: scripts/check_actions_pinned.sh
       - run: |
           actionlint_bin="$(go env GOPATH)/bin/actionlint"
           "${actionlint_bin}" -color=false .github/workflows/*.yml

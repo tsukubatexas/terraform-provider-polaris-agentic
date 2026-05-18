@@ -1,5 +1,10 @@
 # Agentic Terraform Provider for Apache Polaris
 
+[![CI](https://github.com/tsukubatexas/terraform-provider-polaris-agentic/actions/workflows/ci.yml/badge.svg)](https://github.com/tsukubatexas/terraform-provider-polaris-agentic/actions/workflows/ci.yml)
+[![Security](https://github.com/tsukubatexas/terraform-provider-polaris-agentic/actions/workflows/security.yml/badge.svg)](https://github.com/tsukubatexas/terraform-provider-polaris-agentic/actions/workflows/security.yml)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/tsukubatexas/terraform-provider-polaris-agentic/badge)](https://scorecard.dev/viewer/?uri=github.com/tsukubatexas/terraform-provider-polaris-agentic)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 This repo is a local scaffold for an autonomous Terraform provider workflow.
 
 It checks Apache Polaris weekly, fetches the newest OpenAPI specs from the latest GitHub release, regenerates provider operation metadata, runs tests, and can start a GenAI repair loop until the provider is green.
@@ -145,7 +150,7 @@ That is enough for weekly provider maintenance:
 - test-catalog check
 - quarterly cleanup and hardening build
 - auto PR
-- auto-merge when checks pass
+- auto-merge when branch protection allows it
 - weekly self-improvement pass for tooling, tests and hardening
 - Dependabot for Go, GitHub Actions and Codex CLI runtime
 - CodeQL and OSSF Scorecard
@@ -201,12 +206,15 @@ The prompt is passed on stdin and includes the failing test log, the repo rules 
 
 ## Public Repo Hardening
 
+The full hardening model is documented in [docs/security-hardening.md](docs/security-hardening.md).
+
 Recommended GitHub repository settings:
 
 ```text
 Actions: allow GitHub Actions and selected marketplace actions only.
 Default workflow token permissions: read-only.
-Branch protection on main/master: require CI, Security and Test Catalog checks.
+Branch protection on main/master: require CI, Security, Dependency Review and Test Catalog checks.
+Branch protection on main/master: require one code-owner review for protected paths.
 Allow auto-merge: enabled.
 Secret scanning: enabled.
 Push protection: enabled.
