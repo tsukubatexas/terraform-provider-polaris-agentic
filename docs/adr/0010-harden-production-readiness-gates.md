@@ -27,6 +27,8 @@ Harden the production gates:
 - Authenticate the pinned Codex CLI with the repo secret before non-interactive scheduled agent runs, storing the temporary login cache under `CODEX_HOME` inside the runner.
 - Keep ADR guard filtering tolerant when every discovered file is ignored, so install-only working-tree noise exits cleanly.
 - Ignore and remove installed `tools/agent-runtime/node_modules` before scheduled agent workflows create pull requests, so generated maintenance PRs never include transient runtime binaries.
+- Keep workflow-file edits out of autonomous agent pull requests that use the default `GITHUB_TOKEN`; workflow changes require a separate reviewed maintainer PR because GitHub blocks GitHub App tokens from pushing `.github/workflows/*`.
+- Use a repository-local optional auto-merge helper instead of the `enable-pull-request-automerge` action, so container jobs do not depend on a preinstalled `gh` CLI and auto-merge unavailability never fails the maintenance run.
 - Build release artifacts before pushing a release tag and require no generated diff before release.
 - Run shell and GitHub Actions linters in CI.
 - Run every agentic maintenance smoke test in CI, including the provider update loop, final infra repair loop, repair command PATH handling, quarterly cleanup loop, self-improvement loop, and release matrix smoke.
@@ -47,6 +49,8 @@ Harden the production gates:
 - Codex credentials are initialized per job and remain outside the repository checkout.
 - Install-only runs no longer fail the ADR guard when no durable source files changed.
 - Scheduled agent pull requests contain only durable repository changes; temporary Codex runtime installs stay in the runner filesystem.
+- Autonomous agent jobs can propose provider, script, ADR, documentation, and test changes without requiring a powerful workflow-scoped PAT in a public repository.
+- Auto-merge remains best-effort. If branch protection, repository settings, or token scope do not allow it, the workflow stays green and leaves the pull request for normal review.
 - CI takes a little longer, but failures in autonomous maintenance workflows are caught before merge instead of in scheduled jobs.
 - Scheduled repair jobs keep the Node and Codex runtime installed by the workflow visible to the agent subprocess.
 - Operators can manually exercise every scheduled workflow after hardening changes instead of waiting for the next cron window.

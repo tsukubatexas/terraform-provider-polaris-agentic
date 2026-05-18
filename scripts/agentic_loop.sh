@@ -54,6 +54,7 @@ write_prompt() {
     echo "- Keep generated provider update PR commits releasable with Conventional Commits, normally feat(polaris): ..."
     echo "- If tooling is stale, update pinned tooling intentionally and keep CI green."
     echo "- Add or update docs/adr records for durable decisions, new Polaris release behavior, workflow constraints, or test strategy changes."
+    echo "- Do not modify .github/workflows files with the default GitHub token; workflow-file changes require a separate reviewed maintainer PR."
     echo "- Run: make generate fmt test build."
     echo "- Stop only when all checks are green."
     echo
