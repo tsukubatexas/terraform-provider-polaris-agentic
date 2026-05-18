@@ -15,3 +15,4 @@ Every ADR should explain the context, the decision, and the consequences. If an 
 | [0007](0007-require-static-coverage-for-new-polaris-operations.md) | Require Static Coverage Updates for New Polaris Operations | Accepted |
 | [0008](0008-require-adr-updates-for-agentic-changes.md) | Require ADR Updates for Agentic-Relevant Changes | Accepted |
 | [0009](0009-run-quarterly-cleanup-build.md) | Run a Quarterly Cleanup Build | Accepted |
+| [0010](0010-harden-production-readiness-gates.md) | Harden Production Readiness Gates | Accepted |

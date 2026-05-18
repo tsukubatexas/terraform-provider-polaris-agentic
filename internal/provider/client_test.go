@@ -45,6 +45,9 @@ func TestClientOAuthAndRequestHeaders(t *testing.T) {
 			if got := r.Header.Get("Polaris-Realm"); got != "POLARIS" {
 				t.Fatalf("realm got %q", got)
 			}
+			if got := r.Header.Get("X-Custom"); got != "custom" {
+				t.Fatalf("custom header got %q", got)
+			}
 			if got := r.Header.Get("User-Agent"); got != "terraform-provider-polaris-agentic/test" {
 				t.Fatalf("user-agent got %q", got)
 			}
@@ -72,7 +75,20 @@ func TestClientOAuthAndRequestHeaders(t *testing.T) {
 	client.UserAgent = "terraform-provider-polaris-agentic/test"
 
 	for i := 0; i < 2; i++ {
-		resp, err := client.do(context.Background(), "GET", "/catalogs/{catalogName}", map[string]string{"catalogName": "risk"}, map[string]string{"include": "metadata"}, nil, "")
+		resp, err := client.do(
+			context.Background(),
+			"GET",
+			"/catalogs/{catalogName}",
+			map[string]string{"catalogName": "risk"},
+			map[string]string{"include": "metadata"},
+			map[string]string{
+				"Authorization": "Bearer attacker-token",
+				"Polaris-Realm": "ATTACKER",
+				"User-Agent":    "attacker-agent",
+				"X-Custom":      "custom",
+			},
+			"",
+		)
 		if err != nil {
 			t.Fatalf("client.do: %v", err)
 		}
@@ -98,5 +114,12 @@ func TestMapValuesIsDeterministic(t *testing.T) {
 	want := "a=first,m=middle,z=last"
 	if got != want {
 		t.Fatalf("got %q want %q", got, want)
+	}
+}
+
+func TestNewClientRejectsUnsupportedEndpointScheme(t *testing.T) {
+	_, err := newClient(clientConfig{Endpoint: "ftp://polaris.example/api/management/v1"})
+	if err == nil {
+		t.Fatal("expected unsupported endpoint scheme error")
 	}
 }

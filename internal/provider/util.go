@@ -42,7 +42,15 @@ func checkStatus(status int, accepted map[int]struct{}, body string) error {
 	if _, ok := accepted[status]; ok {
 		return nil
 	}
-	return fmt.Errorf("unexpected HTTP status %d: %s", status, body)
+	return fmt.Errorf("unexpected HTTP status %d: %s", status, safeHTTPBody([]byte(body)))
+}
+
+func safeHTTPBody(body []byte) string {
+	const maxBody = 4096
+	if len(body) <= maxBody {
+		return string(body)
+	}
+	return string(body[:maxBody]) + "... [truncated]"
 }
 
 func stableID(parts ...string) string {

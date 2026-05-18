@@ -28,8 +28,6 @@ jobs:
           - 8181:8181
     env:
       POLARIS_RELEASE: ${{ github.event.inputs.polaris_release || 'latest' }}
-      AGENT_RUN_INFRA_TEST: "false"
-      AGENT_INFRA_MODE: service
       POLARIS_INFRA_MODE: service
       POLARIS_ENDPOINT: http://polaris:8181/api/management/v1
       POLARIS_REALM: POLARIS
@@ -41,6 +39,8 @@ jobs:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: "22"

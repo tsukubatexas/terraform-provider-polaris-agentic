@@ -21,27 +21,17 @@ jobs:
       - run: apt-get update && apt-get install -y --no-install-recommends zip ca-certificates
       - run: go mod download
       - run: make generate fmt test
-      - name: Create release tag
-        id: tag
+      - run: git diff --exit-code
+      - name: Calculate release version
+        id: version
         run: |
           tag="v0.0.${GITHUB_RUN_NUMBER}"
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if git rev-parse "$tag" >/dev/null 2>&1; then
-            echo "tag=$tag" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          git tag "$tag"
-          git push origin "$tag"
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "version=${tag#v}" >> "$GITHUB_OUTPUT"
       - name: Build Terraform provider artifacts
         run: |
           mkdir -p dist
-          version="${GITHUB_REF_NAME#v}"
-          if [ "${version}" = "${GITHUB_REF_NAME}" ]; then
-            version="${{ steps.tag.outputs.tag }}"
-            version="${version#v}"
-          fi
+          version="${{ steps.version.outputs.version }}"
           for target in linux_amd64 linux_arm64 darwin_amd64 darwin_arm64; do
             os="${target%_*}"
             arch="${target#*_}"
@@ -50,12 +40,22 @@ jobs:
             GOOS="${os}" GOARCH="${arch}" go build -ldflags "-X main.version=${version}" -o "${work}/terraform-provider-polaris_v${version}" .
             (cd "${work}" && zip "../terraform-provider-polaris_${version}_${os}_${arch}.zip" "terraform-provider-polaris_v${version}")
           done
-          (cd dist && sha256sum *.zip > "terraform-provider-polaris_${version}_SHA256SUMS")
+          (cd dist && sha256sum ./*.zip > "terraform-provider-polaris_${version}_SHA256SUMS")
+      - name: Create release tag
+        run: |
+          tag="${{ steps.version.outputs.tag }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git rev-parse "$tag" >/dev/null 2>&1; then
+            exit 0
+          fi
+          git tag "$tag"
+          git push origin "$tag"
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.tag.outputs.tag }}
-          name: Terraform Provider Polaris ${{ steps.tag.outputs.tag }}
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: Terraform Provider Polaris ${{ steps.version.outputs.tag }}
           files: |
             dist/*.zip
             dist/*_SHA256SUMS

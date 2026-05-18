@@ -4,8 +4,22 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "${ROOT_DIR}"
 
+diff_base_files() {
+  local base_ref="${CHECK_BASE_REF:-}"
+  if [[ -z "${base_ref}" && -n "${GITHUB_BASE_REF:-}" ]]; then
+    base_ref="origin/${GITHUB_BASE_REF}"
+  fi
+
+  if [[ -n "${base_ref}" ]] && git rev-parse --verify "${base_ref}" >/dev/null 2>&1; then
+    local merge_base
+    merge_base="$(git merge-base HEAD "${base_ref}")"
+    git diff --name-only "${merge_base}...HEAD"
+  fi
+}
+
 changed_files="$(
   {
+    diff_base_files
     git diff --name-only
     git ls-files --others --exclude-standard
   } | sort -u

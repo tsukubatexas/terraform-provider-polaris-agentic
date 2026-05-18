@@ -6,6 +6,9 @@ on:
   schedule:
     - cron: "43 4 * * 1"
 
+permissions:
+  contents: read
+
 jobs:
   test-catalog:
     runs-on: ubuntu-latest

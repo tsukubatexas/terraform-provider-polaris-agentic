@@ -13,9 +13,12 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"time"
 
 	"gopkg.in/yaml.v3"
 )
+
+var httpClient = &http.Client{Timeout: 30 * time.Second}
 
 var defaultSpecs = []specSource{
 	{Path: "spec/polaris-management-service.yml", Required: true},
@@ -116,7 +119,11 @@ func latestRelease() (*releaseResponse, error) {
 		return nil, err
 	}
 	req.Header.Set("Accept", "application/vnd.github+json")
-	resp, err := http.DefaultClient.Do(req)
+	req.Header.Set("User-Agent", "terraform-provider-polaris-agentic-generator")
+	if token := os.Getenv("GITHUB_TOKEN"); token != "" {
+		req.Header.Set("Authorization", "Bearer "+token)
+	}
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -133,8 +140,16 @@ func latestRelease() (*releaseResponse, error) {
 }
 
 func fetchSpec(tag string, source specSource) ([]byte, bool, error) {
-	url := fmt.Sprintf("https://raw.githubusercontent.com/apache/polaris/%s/%s", tag, source.Path)
-	resp, err := http.Get(url) //nolint:gosec
+	specURL := fmt.Sprintf("https://raw.githubusercontent.com/apache/polaris/%s/%s", tag, source.Path)
+	req, err := http.NewRequest(http.MethodGet, specURL, nil)
+	if err != nil {
+		return nil, false, err
+	}
+	req.Header.Set("User-Agent", "terraform-provider-polaris-agentic-generator")
+	if token := os.Getenv("GITHUB_TOKEN"); token != "" {
+		req.Header.Set("Authorization", "Bearer "+token)
+	}
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		return nil, false, err
 	}
@@ -144,7 +159,7 @@ func fetchSpec(tag string, source specSource) ([]byte, bool, error) {
 	}
 	if resp.StatusCode != http.StatusOK {
 		body, _ := io.ReadAll(resp.Body)
-		return nil, false, fmt.Errorf("fetch %s failed with HTTP %d: %s", url, resp.StatusCode, string(body))
+		return nil, false, fmt.Errorf("fetch %s failed with HTTP %d: %s", specURL, resp.StatusCode, string(body))
 	}
 	body, err := io.ReadAll(resp.Body)
 	return body, true, err

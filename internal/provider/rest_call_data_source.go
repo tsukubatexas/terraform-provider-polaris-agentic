@@ -103,7 +103,20 @@ func methodAndPath(d *schema.ResourceData, operationAttr, methodAttr, pathAttr s
 	if method == "" || path == "" {
 		return "", "", fmt.Errorf("%s or %s/%s is required", operationAttr, methodAttr, pathAttr)
 	}
-	return strings.ToUpper(method), path, nil
+	method = strings.ToUpper(method)
+	if !isSupportedHTTPMethod(method) {
+		return "", "", fmt.Errorf("unsupported HTTP method %q", method)
+	}
+	return method, path, nil
+}
+
+func isSupportedHTTPMethod(method string) bool {
+	switch strings.ToUpper(method) {
+	case "GET", "POST", "PUT", "PATCH", "DELETE":
+		return true
+	default:
+		return false
+	}
 }
 
 func mapValues(values map[string]string) []string {

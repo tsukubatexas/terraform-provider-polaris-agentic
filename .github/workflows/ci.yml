@@ -7,13 +7,24 @@ on:
       - main
       - master
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
     container: golang:1.23-bookworm
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: apt-get update && apt-get install -y --no-install-recommends shellcheck ca-certificates
       - run: go mod download
+      - run: go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.12
+      - run: shellcheck scripts/*.sh
+      - run: |
+          actionlint_bin="$(go env GOPATH)/bin/actionlint"
+          "${actionlint_bin}" -color=false .github/workflows/*.yml
       - run: make generate fmt test build
       - run: scripts/smoke_agentic_infra_loop.sh
       - run: scripts/smoke_quarterly_cleanup.sh

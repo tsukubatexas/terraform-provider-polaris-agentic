@@ -45,8 +45,12 @@ type response struct {
 
 func newClient(cfg clientConfig) (*Client, error) {
 	endpoint := strings.TrimRight(cfg.Endpoint, "/")
-	if _, err := url.ParseRequestURI(endpoint); err != nil {
+	parsedEndpoint, err := url.ParseRequestURI(endpoint)
+	if err != nil {
 		return nil, fmt.Errorf("invalid endpoint %q: %w", cfg.Endpoint, err)
+	}
+	if parsedEndpoint.Scheme != "http" && parsedEndpoint.Scheme != "https" {
+		return nil, fmt.Errorf("invalid endpoint %q: scheme must be http or https", cfg.Endpoint)
 	}
 	transport := http.DefaultTransport.(*http.Transport).Clone()
 	if cfg.InsecureSkipTLSVerify {
@@ -97,6 +101,9 @@ func (c *Client) do(ctx context.Context, method, pathTemplate string, pathParams
 	if err != nil {
 		return nil, err
 	}
+	for k, v := range headers {
+		req.Header.Set(k, v)
+	}
 	if c.UserAgent != "" {
 		req.Header.Set("User-Agent", c.UserAgent)
 	}
@@ -108,9 +115,6 @@ func (c *Client) do(ctx context.Context, method, pathTemplate string, pathParams
 	}
 	if body != "" {
 		req.Header.Set("Content-Type", "application/json")
-	}
-	for k, v := range headers {
-		req.Header.Set(k, v)
 	}
 
 	resp, err := c.httpClient.Do(req)
@@ -162,7 +166,7 @@ func (c *Client) ensureToken(ctx context.Context) error {
 		return err
 	}
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return fmt.Errorf("oauth token request failed with HTTP %d: %s", resp.StatusCode, string(respBody))
+		return fmt.Errorf("oauth token request failed with HTTP %d: %s", resp.StatusCode, safeHTTPBody(respBody))
 	}
 	var payload struct {
 		AccessToken string `json:"access_token"`
