@@ -56,6 +56,8 @@ jobs:
         run: scripts/quarterly_cleanup.sh
       - name: Run final static infra loop
         run: scripts/agentic_infra_loop.sh
+      - name: Remove transient agent runtime artifacts
+        run: rm -rf tools/agent-runtime/node_modules
       - name: Create pull request
         id: cpr
         uses: peter-evans/create-pull-request@c5a7806660adbe173f04e3e038b0ccdcd758773c # v6

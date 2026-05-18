@@ -26,6 +26,7 @@ Harden the production gates:
 - Ignore installed `tools/agent-runtime/node_modules` content in ADR guards because it is an ephemeral install artifact, not a durable repo decision.
 - Authenticate the pinned Codex CLI with the repo secret before non-interactive scheduled agent runs, storing the temporary login cache under `CODEX_HOME` inside the runner.
 - Keep ADR guard filtering tolerant when every discovered file is ignored, so install-only working-tree noise exits cleanly.
+- Ignore and remove installed `tools/agent-runtime/node_modules` before scheduled agent workflows create pull requests, so generated maintenance PRs never include transient runtime binaries.
 - Build release artifacts before pushing a release tag and require no generated diff before release.
 - Run shell and GitHub Actions linters in CI.
 - Run every agentic maintenance smoke test in CI, including the provider update loop, final infra repair loop, repair command PATH handling, quarterly cleanup loop, self-improvement loop, and release matrix smoke.
@@ -45,6 +46,7 @@ Harden the production gates:
 - ADR enforcement remains strict for runtime lockfiles and package metadata but no longer mistakes installed dependencies for source changes.
 - Codex credentials are initialized per job and remain outside the repository checkout.
 - Install-only runs no longer fail the ADR guard when no durable source files changed.
+- Scheduled agent pull requests contain only durable repository changes; temporary Codex runtime installs stay in the runner filesystem.
 - CI takes a little longer, but failures in autonomous maintenance workflows are caught before merge instead of in scheduled jobs.
 - Scheduled repair jobs keep the Node and Codex runtime installed by the workflow visible to the agent subprocess.
 - Operators can manually exercise every scheduled workflow after hardening changes instead of waiting for the next cron window.
