@@ -9,6 +9,53 @@ Terraform provider for managing Apache Polaris catalogs and REST API resources.
 
 Autonomous update workflows track new Apache Polaris OpenAPI releases, refresh provider metadata, run real Polaris tests, and prepare pull requests.
 
+## Start Here: Terraform Usage
+
+The provider is generic-first: you create Polaris objects by combining OpenAPI `operationId`s, `path_params`, JSON `body`, and an `id_attribute`.
+
+Prominent user docs:
+
+- [AI-generated Terraform Provider Guide](docs/terraform-provider.md): provider configuration, catalog creation, principals, principal roles, catalog roles, grants, and read calls.
+- [Generated Polaris Operation Registry](docs/generated-operations.md): every currently generated `operationId`, method and path.
+- [Real Terraform smoke example](examples/test-catalog/main.tf): the catalog create/destroy example tested against a real Polaris container.
+
+Minimal catalog example:
+
+```hcl
+provider "polaris" {
+  endpoint = "https://polaris.example.com/api/management/v1"
+  realm    = "POLARIS"
+  token    = var.polaris_token
+}
+
+resource "polaris_rest_resource" "risk_catalog" {
+  create_operation_id = "createCatalog"
+  read_operation_id   = "getCatalog"
+  delete_operation_id = "deleteCatalog"
+
+  path_params = {
+    catalogName = "risk"
+  }
+
+  body = jsonencode({
+    catalog = {
+      type = "INTERNAL"
+      name = "risk"
+      properties = {
+        "default-base-location" = "abfss://warehouse@riskstore.dfs.core.windows.net/iceberg/risk"
+      }
+      storageConfigInfo = {
+        storageType      = "AZURE"
+        allowedLocations = ["abfss://warehouse@riskstore.dfs.core.windows.net/iceberg/risk"]
+        tenantId         = "<tenant-id>"
+      }
+    }
+  })
+
+  id_attribute = "name"
+}
+```
+
 ## What It Builds
 
 - A Go Terraform provider published as `tsukubatexas/polaris`.
@@ -52,7 +99,7 @@ scripts/smoke_release_matrix.sh
 
 The smoke test creates an intentional failing test, injects a fake repair agent, verifies that the loop enters repair mode, removes the failure and finishes green.
 
-The release matrix smoke test currently covers Polaris `0.9.0-incubating`, `1.0.0-incubating`, `1.2.0-incubating`, `1.3.0-incubating` and `1.4.1`. Polaris `0.9.0` does not include the later Catalog/Iceberg spec files, so the generator treats them as optional and still verifies the provider against the older management API shape.
+The release matrix smoke test currently covers Polaris `0.9.0-incubating`, `1.0.0-incubating`, `1.2.0-incubating`, `1.3.0-incubating`, `1.4.1` and `1.5.0`. Polaris `0.9.0` does not include the later Catalog/Iceberg spec files, so the generator treats them as optional and still verifies the provider against the older management API shape.
 
 Test the provider against a real local Polaris container:
 
@@ -183,10 +230,9 @@ By default, if `OPENAI_API_KEY` exists and no custom command is configured, the 
 ```bash
 npx --prefix tools/agent-runtime codex exec \
   --dangerously-bypass-approvals-and-sandbox \
-  -a never \
-  --search \
   -m "$AGENT_MODEL" \
   -C "$GITHUB_WORKSPACE" \
+  -o "$LAST_MESSAGE" \
   -
 ```
 
@@ -227,6 +273,8 @@ The workflows request write permissions only in jobs that create PRs, enable aut
 
 ## Provider Example
 
+For full provider usage, start with [docs/terraform-provider.md](docs/terraform-provider.md). The short example below shows the generic resource shape.
+
 ```hcl
 terraform {
   required_providers {
@@ -262,10 +310,15 @@ resource "polaris_rest_resource" "catalog" {
       properties = {
         "default-base-location" = "abfss://warehouse@risk.dfs.core.windows.net/iceberg/risk"
       }
+      storageConfigInfo = {
+        storageType      = "AZURE"
+        allowedLocations = ["abfss://warehouse@risk.dfs.core.windows.net/iceberg/risk"]
+        tenantId         = "<tenant-id>"
+      }
     }
   })
 
-  id_attribute = "catalog.name"
+  id_attribute = "name"
 }
 ```
 
@@ -282,4 +335,4 @@ Specs are fetched from the release tag, including:
 - `spec/iceberg-rest-catalog-open-api.yaml`
 - `spec/polaris-catalog-apis/*.yaml`
 
-As of this provider snapshot, GitHub reports latest release `apache-polaris-1.4.1`.
+As of this provider snapshot, GitHub reports latest release `apache-polaris-1.5.0`.
