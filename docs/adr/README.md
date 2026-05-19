@@ -19,3 +19,4 @@ Every ADR should explain the context, the decision, and the consequences. If an 
 | [0011](0011-use-release-please-monthly-release-train.md) | Use Release Please and a Monthly Release Train | Accepted |
 | [0012](0012-harden-public-open-source-repository.md) | Harden Public Open Source Repository | Accepted |
 | [0013](0013-auto-merge-release-please-prs.md) | Auto-Merge Release Please PRs Through a Hardened Queue | Accepted |
+| [0014](0014-validate-openapi-registry-completeness.md) | Validate OpenAPI Registry Completeness | Accepted |
