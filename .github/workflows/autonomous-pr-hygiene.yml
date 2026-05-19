@@ -1,0 +1,42 @@
+name: Autonomous PR Hygiene
+
+on:
+  schedule:
+    - cron: "7 3 * * *"
+  workflow_dispatch:
+  workflow_run:
+    workflows:
+      - Weekly Agentic Polaris Provider Update
+      - Weekly Self Improvement
+      - Quarterly Cleanup Build
+      - Release Please
+      - Monthly Release Train
+    types:
+      - completed
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: autonomous-pr-hygiene
+  cancel-in-progress: false
+
+jobs:
+  close-obsolete-autonomous-prs:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion != 'skipped' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - name: Install hygiene dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends jq ca-certificates
+      - name: Close obsolete autonomous PRs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
+          PR_HYGIENE_STALE_DAYS: ${{ vars.PR_HYGIENE_STALE_DAYS || '14' }}
+          PR_HYGIENE_FAILED_DAYS: ${{ vars.PR_HYGIENE_FAILED_DAYS || '3' }}
+        run: scripts/autonomous_pr_hygiene.sh

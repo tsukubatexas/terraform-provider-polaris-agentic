@@ -36,6 +36,7 @@ jobs:
       - run: scripts/smoke_agentic_infra_loop.sh
       - run: scripts/smoke_quarterly_cleanup.sh
       - run: scripts/smoke_self_improve_loop.sh
+      - run: scripts/smoke_autonomous_pr_hygiene.sh
       - run: scripts/smoke_release_matrix.sh
       - run: scripts/check_adr_updates.sh
       - run: scripts/check_static_coverage.sh
