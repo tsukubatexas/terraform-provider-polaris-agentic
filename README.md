@@ -178,6 +178,12 @@ Monthly:
   - It merges the release PR.
   - Release Please creates the GitHub release.
   - scripts/build_release_artifacts.sh uploads provider binaries and SHA256SUMS.
+
+Auto-merge:
+  - .github/workflows/release.yml opens or updates the Release Please PR and queues it for auto-merge.
+  - .github/workflows/release-pr-automerge.yml retries auto-merge when the release PR is opened, updated or labeled.
+  - The auto-merge path accepts only the managed release branch and only CHANGELOG.md plus .release-please-manifest.json changes.
+  - Branch protection still decides when the PR can merge: required checks and reviews must be green first.
 ```
 
 Manual release preparation is still possible by running `.github/workflows/release.yml`.
@@ -210,7 +216,9 @@ Recommended additional secret for full release automation:
 Secret: RELEASE_PLEASE_TOKEN
 ```
 
-This should be a fine-grained GitHub token that can create and merge Release Please pull requests and create releases. Without it, the workflows fall back to `GITHUB_TOKEN`; that works for basic repository writes, but GitHub does not trigger follow-up workflows from events created by `GITHUB_TOKEN`, so protected-branch release automation is less smooth.
+This must be a fine-grained GitHub token that can create and merge Release Please pull requests and create releases. `GITHUB_TOKEN` is intentionally not used for Release Please PR creation because GitHub does not trigger follow-up workflows from events created by that token. Without `RELEASE_PLEASE_TOKEN`, release workflows fail fast instead of creating a protected release PR that cannot auto-merge.
+
+The token-created release PR triggers the normal PR checks, `.github/workflows/release-pr-automerge.yml` enables squash auto-merge, and GitHub merges only after branch protection is satisfied.
 
 With `RELEASE_PLEASE_TOKEN`, the repo also runs:
 

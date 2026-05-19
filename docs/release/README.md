@@ -188,7 +188,9 @@ Für die saubere Release-Automation:
 RELEASE_PLEASE_TOKEN
 ```
 
-`RELEASE_PLEASE_TOKEN` sollte ein fein eingeschränkter GitHub Token sein, der Pull Requests erstellen/mergen und Releases erstellen darf. Ohne diesen Token fällt der Workflow auf `GITHUB_TOKEN` zurück. Das funktioniert teilweise, aber GitHub startet keine Folge-Workflows aus Events, die vom `GITHUB_TOKEN` erzeugt wurden. Für protected branches und saubere Checks ist ein eigener Token deshalb stabiler.
+`RELEASE_PLEASE_TOKEN` muss ein fein eingeschränkter GitHub Token sein, der Pull Requests erstellen/mergen und Releases erstellen darf. `GITHUB_TOKEN` wird für Release-Please-PRs absichtlich nicht verwendet, weil GitHub keine Folge-Workflows aus Events startet, die von diesem Token erzeugt wurden. Ohne `RELEASE_PLEASE_TOKEN` brechen die Release-Workflows früh ab, statt einen protected Release-PR zu erzeugen, der nicht auto-meren kann.
+
+Der Release-PR muss mit diesem Token erstellt werden, damit die normalen Pull-Request-Checks starten. Danach legt `.github/workflows/release-pr-automerge.yml` genau diesen PR in die Auto-Merge-Queue. Der Workflow akzeptiert nur `release-please--branches--main` und nur Änderungen an `CHANGELOG.md` sowie `.release-please-manifest.json`.
 
 ## Repo-Einstellungen
 

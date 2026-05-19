@@ -20,13 +20,22 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 120
     env:
-      GH_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN || github.token }}
-      GITHUB_TOKEN: ${{ github.token }}
+      GH_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN }}
     steps:
+      - name: Require Release Please token
+        env:
+          RELEASE_PLEASE_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+        run: |
+          if [[ -n "${RELEASE_PLEASE_TOKEN}" ]]; then
+            exit 0
+          fi
+          echo "::error::RELEASE_PLEASE_TOKEN is required so Release Please PRs trigger protected-branch checks and auto-merge."
+          exit 1
       - name: Prepare release PR
         uses: googleapis/release-please-action@5c625bfb5d1ff62eadeeb3772007f7f66fdcf071 # v4
         with:
-          token: ${{ secrets.RELEASE_PLEASE_TOKEN || github.token }}
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
           target-branch: ${{ github.event.repository.default_branch }}
@@ -63,8 +72,17 @@ jobs:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         if: ${{ steps.find.outputs.found == 'true' }}
         with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+      - name: Validate Release Please PR metadata
+        if: ${{ steps.find.outputs.found == 'true' }}
+        run: scripts/validate_release_please_pr.sh "${{ steps.find.outputs.number }}"
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        if: ${{ steps.find.outputs.found == 'true' }}
+        with:
           ref: ${{ steps.find.outputs.head_ref }}
           fetch-depth: 0
+          persist-credentials: false
       - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
         if: ${{ steps.find.outputs.found == 'true' }}
         with:
@@ -129,7 +147,7 @@ jobs:
         if: ${{ steps.find.outputs.found == 'true' && steps.merge.outputs.merged == 'true' }}
         uses: googleapis/release-please-action@5c625bfb5d1ff62eadeeb3772007f7f66fdcf071 # v4
         with:
-          token: ${{ secrets.RELEASE_PLEASE_TOKEN || github.token }}
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
           target-branch: ${{ github.event.repository.default_branch }}
