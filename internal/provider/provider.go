@@ -84,7 +84,7 @@ func New(version string) func() *schema.Provider {
 			if err != nil {
 				return nil, diag.FromErr(err)
 			}
-			client.UserAgent = "terraform-provider-polaris-agentic/" + version
+			client.UserAgent = "terraform-provider-polaris/" + version
 			return client, nil
 		}
 

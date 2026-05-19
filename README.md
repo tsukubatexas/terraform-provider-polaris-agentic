@@ -1,8 +1,8 @@
 # Terraform Provider for Apache Polaris
 
-[![CI](https://github.com/tsukubatexas/terraform-provider-polaris-agentic/actions/workflows/ci.yml/badge.svg)](https://github.com/tsukubatexas/terraform-provider-polaris-agentic/actions/workflows/ci.yml)
-[![Security](https://github.com/tsukubatexas/terraform-provider-polaris-agentic/actions/workflows/security.yml/badge.svg)](https://github.com/tsukubatexas/terraform-provider-polaris-agentic/actions/workflows/security.yml)
-[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/tsukubatexas/terraform-provider-polaris-agentic/badge)](https://scorecard.dev/viewer/?uri=github.com/tsukubatexas/terraform-provider-polaris-agentic)
+[![CI](https://github.com/tsukubatexas/terraform-provider-polaris/actions/workflows/ci.yml/badge.svg)](https://github.com/tsukubatexas/terraform-provider-polaris/actions/workflows/ci.yml)
+[![Security](https://github.com/tsukubatexas/terraform-provider-polaris/actions/workflows/security.yml/badge.svg)](https://github.com/tsukubatexas/terraform-provider-polaris/actions/workflows/security.yml)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/tsukubatexas/terraform-provider-polaris/badge)](https://scorecard.dev/viewer/?uri=github.com/tsukubatexas/terraform-provider-polaris)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 Terraform provider for managing Apache Polaris catalogs and REST API resources.
@@ -180,7 +180,7 @@ Monthly:
   - It validates the release branch with linting, generation, tests, build and a real Polaris Terraform apply/destroy gate.
   - It merges the release PR.
   - Release Please creates the GitHub release.
-  - scripts/build_release_artifacts.sh uploads provider binaries and SHA256SUMS.
+  - scripts/build_release_artifacts.sh uploads provider binaries, registry manifest, SHA256SUMS and detached GPG signature.
 
 Auto-merge:
   - .github/workflows/release.yml opens or updates the Release Please PR and queues it for auto-merge.
@@ -209,13 +209,12 @@ Release platforms currently include Linux, macOS and Windows for `amd64` and `ar
 One-time registry setup:
 
 ```text
-1. Rename or mirror the GitHub repository to terraform-provider-polaris before public registry onboarding.
-2. Add the provider in the Terraform Registry UI as tsukubatexas/polaris.
-3. Add [the GPG public key](docs/release/terraform-registry-gpg-public-key.asc) to the Terraform Registry provider settings.
-4. Keep RELEASE_PLEASE_TOKEN, TERRAFORM_REGISTRY_GPG_PRIVATE_KEY and TERRAFORM_REGISTRY_GPG_PASSPHRASE as GitHub secrets.
+1. Add the provider in the Terraform Registry UI as tsukubatexas/polaris.
+2. Add [the GPG public key](docs/release/terraform-registry-gpg-public-key.asc) to the Terraform Registry provider settings.
+3. Keep RELEASE_PLEASE_TOKEN, TERRAFORM_REGISTRY_GPG_PRIVATE_KEY and TERRAFORM_REGISTRY_GPG_PASSPHRASE as GitHub secrets.
 ```
 
-After that, monthly GitHub Releases are Registry-ingestable. The Registry watches GitHub releases; the workflow does not need a Terraform Registry API token.
+The repository name intentionally matches the Terraform Registry provider naming convention: `terraform-provider-polaris` publishes as `tsukubatexas/polaris`. After the one-time UI connection, monthly GitHub Releases are Registry-ingestable. The Registry watches GitHub releases; the workflow does not need a Terraform Registry API token.
 
 ## One-Time Setup
 

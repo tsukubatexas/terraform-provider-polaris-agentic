@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/tsukubatexas/terraform-provider-polaris-agentic/internal/generated"
+	"github.com/tsukubatexas/terraform-provider-polaris/internal/generated"
 )
 
 var pathParamPattern = regexp.MustCompile(`\{([^{}]+)\}`)

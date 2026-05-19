@@ -1,4 +1,4 @@
-module github.com/tsukubatexas/terraform-provider-polaris-agentic
+module github.com/tsukubatexas/terraform-provider-polaris
 
 go 1.24.0
 

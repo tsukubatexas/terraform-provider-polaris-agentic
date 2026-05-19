@@ -181,7 +181,7 @@ terraform-provider-polaris_<version>_SHA256SUMS.sig
 
 Der Manifest-Asset enthält die unterstützte Terraform Provider Protocol Version. `SHA256SUMS` enthält die ZIP-Dateien und den Manifest-Asset. `SHA256SUMS.sig` ist eine detached GPG-Signatur über `SHA256SUMS`.
 
-Wichtig für `tsukubatexas/polaris`: Die Public Terraform Registry erwartet, dass das GitHub Repository zum Provider-Namen passt. Für diesen Provider sollte das öffentliche Registry-Repo darum `terraform-provider-polaris` heißen. Danach wird der Provider einmalig in der Terraform Registry UI verbunden; neue GitHub Releases werden anschließend automatisch von der Registry eingelesen.
+Wichtig für `tsukubatexas/polaris`: Die Public Terraform Registry erwartet, dass das GitHub Repository zum Provider-Namen passt. Für diesen Provider heißt das öffentliche Registry-Repo darum `terraform-provider-polaris`. Danach wird der Provider einmalig in der Terraform Registry UI verbunden; neue GitHub Releases werden anschließend automatisch von der Registry eingelesen.
 
 Der öffentliche Registry-Signing-Key liegt in [terraform-registry-gpg-public-key.asc](terraform-registry-gpg-public-key.asc). Fingerprint:
 
