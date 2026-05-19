@@ -164,11 +164,15 @@ jobs:
         if: ${{ steps.publish.outputs.release_created == 'true' }}
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends zip ca-certificates
+          sudo apt-get install -y --no-install-recommends zip gnupg ca-certificates
           go mod download
           make generate fmt test
           git diff --exit-code
           scripts/build_release_artifacts.sh "${{ steps.publish.outputs.version }}" dist
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.TERRAFORM_REGISTRY_GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.TERRAFORM_REGISTRY_GPG_PASSPHRASE }}
+          REQUIRE_TERRAFORM_REGISTRY_SIGNATURE: "true"
       - name: Upload release assets
         if: ${{ steps.publish.outputs.release_created == 'true' }}
         uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
@@ -176,4 +180,6 @@ jobs:
           tag_name: ${{ steps.publish.outputs.tag_name }}
           files: |
             dist/*.zip
+            dist/*_manifest.json
             dist/*_SHA256SUMS
+            dist/*_SHA256SUMS.sig

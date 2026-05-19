@@ -104,11 +104,15 @@ jobs:
       - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
         with:
           go-version-file: go.mod
-      - run: sudo apt-get update && sudo apt-get install -y --no-install-recommends zip ca-certificates
+      - run: sudo apt-get update && sudo apt-get install -y --no-install-recommends zip gnupg ca-certificates
       - run: go mod download
       - run: make generate fmt test
       - run: git diff --exit-code
       - name: Build Terraform provider artifacts
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.TERRAFORM_REGISTRY_GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.TERRAFORM_REGISTRY_GPG_PASSPHRASE }}
+          REQUIRE_TERRAFORM_REGISTRY_SIGNATURE: "true"
         run: scripts/build_release_artifacts.sh "${{ needs.release-please.outputs.version }}" dist
       - name: Upload release assets
         uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
@@ -116,4 +120,6 @@ jobs:
           tag_name: ${{ needs.release-please.outputs.tag_name }}
           files: |
             dist/*.zip
+            dist/*_manifest.json
             dist/*_SHA256SUMS
+            dist/*_SHA256SUMS.sig

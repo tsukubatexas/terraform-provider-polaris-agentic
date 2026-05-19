@@ -9,6 +9,8 @@ Terraform provider for managing Apache Polaris catalogs and REST API resources.
 
 Autonomous update workflows track new Apache Polaris OpenAPI releases, refresh provider metadata, run real Polaris tests, and prepare pull requests.
 
+Built for serious platform teams: Registry-ready releases, GPG-signed provider checksums, real Polaris apply/destroy validation, OpenAPI compatibility gates, branch protection, CodeQL, Scorecard, and autonomous maintenance PRs.
+
 ## Start Here: Terraform Usage
 
 The provider is generic-first: you create Polaris objects by combining OpenAPI `operationId`s, `path_params`, JSON `body`, and an `id_attribute`.
@@ -67,6 +69,7 @@ resource "polaris_rest_resource" "risk_catalog" {
 - A real Polaris catalog smoke test that applies and destroys Terraform against a running Polaris service.
 - Automated OpenAPI tracking, provider regeneration, and PR preparation when Polaris changes.
 - Release Please tracking with a controlled monthly release train.
+- Terraform Registry-ready GitHub releases with provider ZIPs, manifest, SHA256SUMS, and detached GPG signature.
 
 ## Why Generic First?
 
@@ -190,6 +193,30 @@ Manual release preparation is still possible by running `.github/workflows/relea
 
 Use `feat:` for provider capability changes, `fix:` for bug fixes and `feat!:` or `fix!:` for breaking changes. Pure maintenance commits can use `chore:`, `ci:` or `docs:` and will not force a version bump by themselves.
 
+## Terraform Registry Publishing
+
+The big release path is designed for the public Terraform Registry. Release assets are built in HashiCorp's expected shape:
+
+```text
+terraform-provider-polaris_<version>_<os>_<arch>.zip
+terraform-provider-polaris_<version>_manifest.json
+terraform-provider-polaris_<version>_SHA256SUMS
+terraform-provider-polaris_<version>_SHA256SUMS.sig
+```
+
+Release platforms currently include Linux, macOS and Windows for `amd64` and `arm64`.
+
+One-time registry setup:
+
+```text
+1. Rename or mirror the GitHub repository to terraform-provider-polaris before public registry onboarding.
+2. Add the provider in the Terraform Registry UI as tsukubatexas/polaris.
+3. Add [the GPG public key](docs/release/terraform-registry-gpg-public-key.asc) to the Terraform Registry provider settings.
+4. Keep RELEASE_PLEASE_TOKEN, TERRAFORM_REGISTRY_GPG_PRIVATE_KEY and TERRAFORM_REGISTRY_GPG_PASSPHRASE as GitHub secrets.
+```
+
+After that, monthly GitHub Releases are Registry-ingestable. The Registry watches GitHub releases; the workflow does not need a Terraform Registry API token.
+
 ## One-Time Setup
 
 For autonomous repair mode, set one repository secret:
@@ -224,6 +251,21 @@ With `RELEASE_PLEASE_TOKEN`, the repo also runs:
 
 - weekly Release Please preparation
 - monthly controlled GitHub releases with provider artifacts
+
+Required for Terraform Registry publishing:
+
+```text
+Secret: TERRAFORM_REGISTRY_GPG_PRIVATE_KEY
+Secret: TERRAFORM_REGISTRY_GPG_PASSPHRASE
+```
+
+`TERRAFORM_REGISTRY_GPG_PRIVATE_KEY` should be the ASCII-armored private key for the public GPG key registered in Terraform Registry. The release workflows fail before upload if signing is unavailable, so a "big release" cannot silently ship unsigned provider artifacts.
+
+Current Terraform Registry signing key fingerprint:
+
+```text
+C9CEBB9BFC7B93194688356A7FADB37AD7485B8F
+```
 
 Optional variables:
 
