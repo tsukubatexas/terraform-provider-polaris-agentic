@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/tsukubatexas/terraform-provider-polaris/compare/v0.1.0...v0.1.1) (2026-05-19)
+
+
+### Bug Fixes
+
+* **release:** publish registry-ready provider artifacts ([002b14e](https://github.com/tsukubatexas/terraform-provider-polaris/commit/002b14ed5c727229c6dec33ec120bc98a6be4870))
+
 ## 0.1.0 (2026-05-19)
 
 
