@@ -34,6 +34,7 @@ run_checks() {
     make test &&
     make build &&
     bash -n scripts/*.sh &&
+    scripts/smoke_autonomous_pr_hygiene.sh &&
     scripts/check_adr_updates.sh &&
     scripts/check_static_coverage.sh || return $?
 
@@ -58,6 +59,7 @@ write_prompt() {
     echo "- Keep generated files deterministic."
     echo "- Keep GitHub Actions least-privilege and public-repo safe."
     echo "- Preserve the normal agentic update loop and the separate final static infra loop."
+    echo "- Keep autonomous PR hygiene working so stale bot PRs are closed without human cleanup."
     echo "- Add or update ADRs for every durable cleanup, workflow, dependency, or test strategy decision."
     echo "- Do not modify .github/workflows files with the default GitHub token; workflow-file changes require a separate reviewed maintainer PR."
     echo
@@ -73,6 +75,7 @@ write_prompt() {
     echo "- npm --prefix tools/agent-runtime install --package-lock-only"
     echo "- make generate fmt test build"
     echo "- bash -n scripts/*.sh"
+    echo "- scripts/smoke_autonomous_pr_hygiene.sh"
     echo "- scripts/check_adr_updates.sh"
     echo "- scripts/check_static_coverage.sh"
     echo "- final workflow also runs scripts/agentic_infra_loop.sh against real Polaris"

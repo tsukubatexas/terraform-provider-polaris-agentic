@@ -17,9 +17,11 @@ Add a quarterly GitHub Actions workflow, `.github/workflows/quarterly-cleanup.ym
 The workflow runs:
 
 - `scripts/quarterly_cleanup.sh`
+- autonomous PR hygiene before and after the deep-clean pass
 - dependency and lockfile cleanup checks
 - generator, format, tests, and build
 - shell syntax checks
+- autonomous PR hygiene smoke coverage
 - ADR update guard
 - static coverage guard
 - `scripts/agentic_infra_loop.sh` against a real Polaris service container
@@ -31,4 +33,5 @@ The quarterly cleanup loop may use the configured agent to simplify, remove stal
 - The repo gets a deliberate deep-clean cadence separate from weekly release tracking.
 - Any durable cleanup decision must be reflected in ADRs.
 - The cleanup is still bounded by checks and real Polaris validation.
+- The cleanup pass also removes stale, failed, or superseded bot-managed PRs so autonomous maintenance queues do not accumulate.
 - The workflow is intentionally heavier and has a longer timeout than the weekly loops.
