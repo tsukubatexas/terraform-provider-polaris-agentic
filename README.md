@@ -15,8 +15,10 @@ The provider is generic-first: you create Polaris objects by combining OpenAPI `
 
 Prominent user docs:
 
+- [Terraform Registry provider docs](docs/index.md): generated provider documentation in the default Terraform docs layout.
 - [AI-generated Terraform Provider Guide](docs/terraform-provider.md): provider configuration, catalog creation, principals, principal roles, catalog roles, grants, and read calls.
 - [Generated Polaris Operation Registry](docs/generated-operations.md): every currently generated `operationId`, method and path.
+- [Complete Polaris example](examples/complete-polaris/main.tf): realm header, catalog, principal, roles, grants, namespace and table metadata in one Terraform configuration.
 - [Real Terraform smoke example](examples/test-catalog/main.tf): the catalog create/destroy example tested against a real Polaris container.
 
 Minimal catalog example:
@@ -142,7 +144,7 @@ It does:
 ```text
 1. Fetch latest Apache Polaris release.
 2. Fetch Polaris OpenAPI specs from that release tag.
-3. Generate operation metadata and docs.
+3. Generate operation metadata, Terraform Registry docs and examples.
 4. Run fmt, tests and build.
 5. Run a separate final static infra loop against a real Apache Polaris service container.
 6. If the final infra loop fails, call a GenAI repair agent and rerun it.
@@ -273,7 +275,7 @@ The workflows request write permissions only in jobs that create PRs, enable aut
 
 ## Provider Example
 
-For full provider usage, start with [docs/terraform-provider.md](docs/terraform-provider.md). The short example below shows the generic resource shape.
+For full provider usage, start with [docs/index.md](docs/index.md), [docs/terraform-provider.md](docs/terraform-provider.md), and [examples/complete-polaris/main.tf](examples/complete-polaris/main.tf). The short example below shows the generic resource shape.
 
 ```hcl
 terraform {

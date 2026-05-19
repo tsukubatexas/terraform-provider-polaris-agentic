@@ -2,79 +2,81 @@
 
 Release: `apache-polaris-1.5.0`
 
-| Operation ID | Method | Path | Spec |
-| --- | --- | --- | --- |
-| `addGrantToCatalogRole` | `PUT` | `/catalogs/{catalogName}/catalog-roles/{catalogRoleName}/grants` | `spec/polaris-management-service.yml` |
-| `assignCatalogRoleToPrincipalRole` | `PUT` | `/principal-roles/{principalRoleName}/catalog-roles/{catalogName}` | `spec/polaris-management-service.yml` |
-| `assignPrincipalRole` | `PUT` | `/principals/{principalName}/principal-roles` | `spec/polaris-management-service.yml` |
-| `attachPolicy` | `PUT` | `/polaris/v1/{prefix}/namespaces/{namespace}/policies/{policy-name}/mappings` | `spec/polaris-catalog-apis/policy-apis.yaml` |
-| `cancelPlanning` | `DELETE` | `/v1/{prefix}/namespaces/{namespace}/tables/{table}/plan/{plan-id}` | `spec/iceberg-rest-catalog-open-api.yaml` |
-| `commitTransaction` | `POST` | `/v1/{prefix}/transactions/commit` | `spec/iceberg-rest-catalog-open-api.yaml` |
-| `createCatalog` | `POST` | `/catalogs` | `spec/polaris-management-service.yml` |
-| `createCatalogRole` | `POST` | `/catalogs/{catalogName}/catalog-roles` | `spec/polaris-management-service.yml` |
-| `createGenericTable` | `POST` | `/polaris/v1/{prefix}/namespaces/{namespace}/generic-tables` | `spec/polaris-catalog-apis/generic-tables-api.yaml` |
-| `createNamespace` | `POST` | `/v1/{prefix}/namespaces` | `spec/iceberg-rest-catalog-open-api.yaml` |
-| `createPolicy` | `POST` | `/polaris/v1/{prefix}/namespaces/{namespace}/policies` | `spec/polaris-catalog-apis/policy-apis.yaml` |
-| `createPrincipal` | `POST` | `/principals` | `spec/polaris-management-service.yml` |
-| `createPrincipalRole` | `POST` | `/principal-roles` | `spec/polaris-management-service.yml` |
-| `createTable` | `POST` | `/v1/{prefix}/namespaces/{namespace}/tables` | `spec/iceberg-rest-catalog-open-api.yaml` |
-| `createView` | `POST` | `/v1/{prefix}/namespaces/{namespace}/views` | `spec/iceberg-rest-catalog-open-api.yaml` |
-| `deleteCatalog` | `DELETE` | `/catalogs/{catalogName}` | `spec/polaris-management-service.yml` |
-| `deleteCatalogRole` | `DELETE` | `/catalogs/{catalogName}/catalog-roles/{catalogRoleName}` | `spec/polaris-management-service.yml` |
-| `deletePrincipal` | `DELETE` | `/principals/{principalName}` | `spec/polaris-management-service.yml` |
-| `deletePrincipalRole` | `DELETE` | `/principal-roles/{principalRoleName}` | `spec/polaris-management-service.yml` |
-| `detachPolicy` | `POST` | `/polaris/v1/{prefix}/namespaces/{namespace}/policies/{policy-name}/mappings` | `spec/polaris-catalog-apis/policy-apis.yaml` |
-| `dropGenericTable` | `DELETE` | `/polaris/v1/{prefix}/namespaces/{namespace}/generic-tables/{generic-table}` | `spec/polaris-catalog-apis/generic-tables-api.yaml` |
-| `dropNamespace` | `DELETE` | `/v1/{prefix}/namespaces/{namespace}` | `spec/iceberg-rest-catalog-open-api.yaml` |
-| `dropPolicy` | `DELETE` | `/polaris/v1/{prefix}/namespaces/{namespace}/policies/{policy-name}` | `spec/polaris-catalog-apis/policy-apis.yaml` |
-| `dropTable` | `DELETE` | `/v1/{prefix}/namespaces/{namespace}/tables/{table}` | `spec/iceberg-rest-catalog-open-api.yaml` |
-| `dropView` | `DELETE` | `/v1/{prefix}/namespaces/{namespace}/views/{view}` | `spec/iceberg-rest-catalog-open-api.yaml` |
-| `fetchPlanningResult` | `GET` | `/v1/{prefix}/namespaces/{namespace}/tables/{table}/plan/{plan-id}` | `spec/iceberg-rest-catalog-open-api.yaml` |
-| `fetchScanTasks` | `POST` | `/v1/{prefix}/namespaces/{namespace}/tables/{table}/tasks` | `spec/iceberg-rest-catalog-open-api.yaml` |
-| `getApplicablePolicies` | `GET` | `/polaris/v1/{prefix}/applicable-policies` | `spec/polaris-catalog-apis/policy-apis.yaml` |
-| `getCatalog` | `GET` | `/catalogs/{catalogName}` | `spec/polaris-management-service.yml` |
-| `getCatalogRole` | `GET` | `/catalogs/{catalogName}/catalog-roles/{catalogRoleName}` | `spec/polaris-management-service.yml` |
-| `getConfig` | `GET` | `/v1/config` | `spec/iceberg-rest-catalog-open-api.yaml` |
-| `getPrincipal` | `GET` | `/principals/{principalName}` | `spec/polaris-management-service.yml` |
-| `getPrincipalRole` | `GET` | `/principal-roles/{principalRoleName}` | `spec/polaris-management-service.yml` |
-| `getToken` | `POST` | `/v1/oauth/tokens` | `spec/iceberg-rest-catalog-open-api.yaml` |
-| `listAssigneePrincipalRolesForCatalogRole` | `GET` | `/catalogs/{catalogName}/catalog-roles/{catalogRoleName}/principal-roles` | `spec/polaris-management-service.yml` |
-| `listAssigneePrincipalsForPrincipalRole` | `GET` | `/principal-roles/{principalRoleName}/principals` | `spec/polaris-management-service.yml` |
-| `listCatalogRoles` | `GET` | `/catalogs/{catalogName}/catalog-roles` | `spec/polaris-management-service.yml` |
-| `listCatalogRolesForPrincipalRole` | `GET` | `/principal-roles/{principalRoleName}/catalog-roles/{catalogName}` | `spec/polaris-management-service.yml` |
-| `listCatalogs` | `GET` | `/catalogs` | `spec/polaris-management-service.yml` |
-| `listGenericTables` | `GET` | `/polaris/v1/{prefix}/namespaces/{namespace}/generic-tables` | `spec/polaris-catalog-apis/generic-tables-api.yaml` |
-| `listGrantsForCatalogRole` | `GET` | `/catalogs/{catalogName}/catalog-roles/{catalogRoleName}/grants` | `spec/polaris-management-service.yml` |
-| `listNamespaces` | `GET` | `/v1/{prefix}/namespaces` | `spec/iceberg-rest-catalog-open-api.yaml` |
-| `listPolicies` | `GET` | `/polaris/v1/{prefix}/namespaces/{namespace}/policies` | `spec/polaris-catalog-apis/policy-apis.yaml` |
-| `listPrincipalRoles` | `GET` | `/principal-roles` | `spec/polaris-management-service.yml` |
-| `listPrincipalRolesAssigned` | `GET` | `/principals/{principalName}/principal-roles` | `spec/polaris-management-service.yml` |
-| `listPrincipals` | `GET` | `/principals` | `spec/polaris-management-service.yml` |
-| `listTables` | `GET` | `/v1/{prefix}/namespaces/{namespace}/tables` | `spec/iceberg-rest-catalog-open-api.yaml` |
-| `listViews` | `GET` | `/v1/{prefix}/namespaces/{namespace}/views` | `spec/iceberg-rest-catalog-open-api.yaml` |
-| `loadCredentials` | `GET` | `/v1/{prefix}/namespaces/{namespace}/tables/{table}/credentials` | `spec/iceberg-rest-catalog-open-api.yaml` |
-| `loadGenericTable` | `GET` | `/polaris/v1/{prefix}/namespaces/{namespace}/generic-tables/{generic-table}` | `spec/polaris-catalog-apis/generic-tables-api.yaml` |
-| `loadNamespaceMetadata` | `GET` | `/v1/{prefix}/namespaces/{namespace}` | `spec/iceberg-rest-catalog-open-api.yaml` |
-| `loadPolicy` | `GET` | `/polaris/v1/{prefix}/namespaces/{namespace}/policies/{policy-name}` | `spec/polaris-catalog-apis/policy-apis.yaml` |
-| `loadTable` | `GET` | `/v1/{prefix}/namespaces/{namespace}/tables/{table}` | `spec/iceberg-rest-catalog-open-api.yaml` |
-| `loadView` | `GET` | `/v1/{prefix}/namespaces/{namespace}/views/{view}` | `spec/iceberg-rest-catalog-open-api.yaml` |
-| `planTableScan` | `POST` | `/v1/{prefix}/namespaces/{namespace}/tables/{table}/plan` | `spec/iceberg-rest-catalog-open-api.yaml` |
-| `registerTable` | `POST` | `/v1/{prefix}/namespaces/{namespace}/register` | `spec/iceberg-rest-catalog-open-api.yaml` |
-| `renameTable` | `POST` | `/v1/{prefix}/tables/rename` | `spec/iceberg-rest-catalog-open-api.yaml` |
-| `renameView` | `POST` | `/v1/{prefix}/views/rename` | `spec/iceberg-rest-catalog-open-api.yaml` |
-| `replaceView` | `POST` | `/v1/{prefix}/namespaces/{namespace}/views/{view}` | `spec/iceberg-rest-catalog-open-api.yaml` |
-| `reportMetrics` | `POST` | `/v1/{prefix}/namespaces/{namespace}/tables/{table}/metrics` | `spec/iceberg-rest-catalog-open-api.yaml` |
-| `resetCredentials` | `POST` | `/principals/{principalName}/reset` | `spec/polaris-management-service.yml` |
-| `revokeCatalogRoleFromPrincipalRole` | `DELETE` | `/principal-roles/{principalRoleName}/catalog-roles/{catalogName}/{catalogRoleName}` | `spec/polaris-management-service.yml` |
-| `revokeGrantFromCatalogRole` | `POST` | `/catalogs/{catalogName}/catalog-roles/{catalogRoleName}/grants` | `spec/polaris-management-service.yml` |
-| `revokePrincipalRole` | `DELETE` | `/principals/{principalName}/principal-roles/{principalRoleName}` | `spec/polaris-management-service.yml` |
-| `rotateCredentials` | `POST` | `/principals/{principalName}/rotate` | `spec/polaris-management-service.yml` |
-| `sendNotification` | `POST` | `/v1/{prefix}/namespaces/{namespace}/tables/{table}/notifications` | `spec/polaris-catalog-apis/notifications-api.yaml` |
-| `spec_polaris_catalog_apis_oauth_tokens_api_yaml_POST_v1_oauth_tokens` | `POST` | `/v1/oauth/tokens` | `spec/polaris-catalog-apis/oauth-tokens-api.yaml` |
-| `updateCatalog` | `PUT` | `/catalogs/{catalogName}` | `spec/polaris-management-service.yml` |
-| `updateCatalogRole` | `PUT` | `/catalogs/{catalogName}/catalog-roles/{catalogRoleName}` | `spec/polaris-management-service.yml` |
-| `updatePolicy` | `PUT` | `/polaris/v1/{prefix}/namespaces/{namespace}/policies/{policy-name}` | `spec/polaris-catalog-apis/policy-apis.yaml` |
-| `updatePrincipal` | `PUT` | `/principals/{principalName}` | `spec/polaris-management-service.yml` |
-| `updatePrincipalRole` | `PUT` | `/principal-roles/{principalRoleName}` | `spec/polaris-management-service.yml` |
-| `updateProperties` | `POST` | `/v1/{prefix}/namespaces/{namespace}/properties` | `spec/iceberg-rest-catalog-open-api.yaml` |
-| `updateTable` | `POST` | `/v1/{prefix}/namespaces/{namespace}/tables/{table}` | `spec/iceberg-rest-catalog-open-api.yaml` |
+This inventory is generated by `cmd/polaris-provider-gen` and is refreshed by `make generate`.
+
+| Operation ID | Method | Path | Tags | Summary | Spec |
+| --- | --- | --- | --- | --- | --- |
+| `addGrantToCatalogRole` | `PUT` | `/catalogs/{catalogName}/catalog-roles/{catalogRoleName}/grants` |  |  | `spec/polaris-management-service.yml` |
+| `assignCatalogRoleToPrincipalRole` | `PUT` | `/principal-roles/{principalRoleName}/catalog-roles/{catalogName}` |  |  | `spec/polaris-management-service.yml` |
+| `assignPrincipalRole` | `PUT` | `/principals/{principalName}/principal-roles` |  |  | `spec/polaris-management-service.yml` |
+| `attachPolicy` | `PUT` | `/polaris/v1/{prefix}/namespaces/{namespace}/policies/{policy-name}/mappings` | Policy API | Create a mapping between a policy and a resource entity | `spec/polaris-catalog-apis/policy-apis.yaml` |
+| `cancelPlanning` | `DELETE` | `/v1/{prefix}/namespaces/{namespace}/tables/{table}/plan/{plan-id}` | Catalog API | Cancels scan planning for a plan-id | `spec/iceberg-rest-catalog-open-api.yaml` |
+| `commitTransaction` | `POST` | `/v1/{prefix}/transactions/commit` | Catalog API | Commit updates to multiple tables in an atomic operation | `spec/iceberg-rest-catalog-open-api.yaml` |
+| `createCatalog` | `POST` | `/catalogs` |  |  | `spec/polaris-management-service.yml` |
+| `createCatalogRole` | `POST` | `/catalogs/{catalogName}/catalog-roles` |  |  | `spec/polaris-management-service.yml` |
+| `createGenericTable` | `POST` | `/polaris/v1/{prefix}/namespaces/{namespace}/generic-tables` | Generic Table API | Create a generic table under the given namespace | `spec/polaris-catalog-apis/generic-tables-api.yaml` |
+| `createNamespace` | `POST` | `/v1/{prefix}/namespaces` | Catalog API | Create a namespace | `spec/iceberg-rest-catalog-open-api.yaml` |
+| `createPolicy` | `POST` | `/polaris/v1/{prefix}/namespaces/{namespace}/policies` | Policy API | Create a policy in the given namespace | `spec/polaris-catalog-apis/policy-apis.yaml` |
+| `createPrincipal` | `POST` | `/principals` |  |  | `spec/polaris-management-service.yml` |
+| `createPrincipalRole` | `POST` | `/principal-roles` |  |  | `spec/polaris-management-service.yml` |
+| `createTable` | `POST` | `/v1/{prefix}/namespaces/{namespace}/tables` | Catalog API | Create a table in the given namespace | `spec/iceberg-rest-catalog-open-api.yaml` |
+| `createView` | `POST` | `/v1/{prefix}/namespaces/{namespace}/views` | Catalog API | Create a view in the given namespace | `spec/iceberg-rest-catalog-open-api.yaml` |
+| `deleteCatalog` | `DELETE` | `/catalogs/{catalogName}` |  |  | `spec/polaris-management-service.yml` |
+| `deleteCatalogRole` | `DELETE` | `/catalogs/{catalogName}/catalog-roles/{catalogRoleName}` |  |  | `spec/polaris-management-service.yml` |
+| `deletePrincipal` | `DELETE` | `/principals/{principalName}` |  |  | `spec/polaris-management-service.yml` |
+| `deletePrincipalRole` | `DELETE` | `/principal-roles/{principalRoleName}` |  |  | `spec/polaris-management-service.yml` |
+| `detachPolicy` | `POST` | `/polaris/v1/{prefix}/namespaces/{namespace}/policies/{policy-name}/mappings` | Policy API | Remove a mapping between a policy and a target entity | `spec/polaris-catalog-apis/policy-apis.yaml` |
+| `dropGenericTable` | `DELETE` | `/polaris/v1/{prefix}/namespaces/{namespace}/generic-tables/{generic-table}` | Generic Table API | Drop a generic table under the given namespace from the catalog | `spec/polaris-catalog-apis/generic-tables-api.yaml` |
+| `dropNamespace` | `DELETE` | `/v1/{prefix}/namespaces/{namespace}` | Catalog API | Drop a namespace from the catalog. Namespace must be empty. | `spec/iceberg-rest-catalog-open-api.yaml` |
+| `dropPolicy` | `DELETE` | `/polaris/v1/{prefix}/namespaces/{namespace}/policies/{policy-name}` | Policy API | Drop a policy from the catalog | `spec/polaris-catalog-apis/policy-apis.yaml` |
+| `dropTable` | `DELETE` | `/v1/{prefix}/namespaces/{namespace}/tables/{table}` | Catalog API | Drop a table from the catalog | `spec/iceberg-rest-catalog-open-api.yaml` |
+| `dropView` | `DELETE` | `/v1/{prefix}/namespaces/{namespace}/views/{view}` | Catalog API | Drop a view from the catalog | `spec/iceberg-rest-catalog-open-api.yaml` |
+| `fetchPlanningResult` | `GET` | `/v1/{prefix}/namespaces/{namespace}/tables/{table}/plan/{plan-id}` | Catalog API | Fetches the result of scan planning for a plan-id | `spec/iceberg-rest-catalog-open-api.yaml` |
+| `fetchScanTasks` | `POST` | `/v1/{prefix}/namespaces/{namespace}/tables/{table}/tasks` | Catalog API | Fetches result tasks for a plan task | `spec/iceberg-rest-catalog-open-api.yaml` |
+| `getApplicablePolicies` | `GET` | `/polaris/v1/{prefix}/applicable-policies` | Policy API | Get Applicable policies for catalog, namespace, table, or views | `spec/polaris-catalog-apis/policy-apis.yaml` |
+| `getCatalog` | `GET` | `/catalogs/{catalogName}` |  |  | `spec/polaris-management-service.yml` |
+| `getCatalogRole` | `GET` | `/catalogs/{catalogName}/catalog-roles/{catalogRoleName}` |  |  | `spec/polaris-management-service.yml` |
+| `getConfig` | `GET` | `/v1/config` | Configuration API | List all catalog configuration settings | `spec/iceberg-rest-catalog-open-api.yaml` |
+| `getPrincipal` | `GET` | `/principals/{principalName}` |  |  | `spec/polaris-management-service.yml` |
+| `getPrincipalRole` | `GET` | `/principal-roles/{principalRoleName}` |  |  | `spec/polaris-management-service.yml` |
+| `getToken` | `POST` | `/v1/oauth/tokens` | OAuth2 API | Get a token using an OAuth2 flow (DEPRECATED for REMOVAL) | `spec/iceberg-rest-catalog-open-api.yaml` |
+| `listAssigneePrincipalRolesForCatalogRole` | `GET` | `/catalogs/{catalogName}/catalog-roles/{catalogRoleName}/principal-roles` |  |  | `spec/polaris-management-service.yml` |
+| `listAssigneePrincipalsForPrincipalRole` | `GET` | `/principal-roles/{principalRoleName}/principals` |  |  | `spec/polaris-management-service.yml` |
+| `listCatalogRoles` | `GET` | `/catalogs/{catalogName}/catalog-roles` |  |  | `spec/polaris-management-service.yml` |
+| `listCatalogRolesForPrincipalRole` | `GET` | `/principal-roles/{principalRoleName}/catalog-roles/{catalogName}` |  |  | `spec/polaris-management-service.yml` |
+| `listCatalogs` | `GET` | `/catalogs` |  |  | `spec/polaris-management-service.yml` |
+| `listGenericTables` | `GET` | `/polaris/v1/{prefix}/namespaces/{namespace}/generic-tables` | Generic Table API | List all generic tables identifiers underneath a given namespace | `spec/polaris-catalog-apis/generic-tables-api.yaml` |
+| `listGrantsForCatalogRole` | `GET` | `/catalogs/{catalogName}/catalog-roles/{catalogRoleName}/grants` |  |  | `spec/polaris-management-service.yml` |
+| `listNamespaces` | `GET` | `/v1/{prefix}/namespaces` | Catalog API | List namespaces, optionally providing a parent namespace to list underneath | `spec/iceberg-rest-catalog-open-api.yaml` |
+| `listPolicies` | `GET` | `/polaris/v1/{prefix}/namespaces/{namespace}/policies` | Policy API | List all policy identifiers underneath a given namespace | `spec/polaris-catalog-apis/policy-apis.yaml` |
+| `listPrincipalRoles` | `GET` | `/principal-roles` |  |  | `spec/polaris-management-service.yml` |
+| `listPrincipalRolesAssigned` | `GET` | `/principals/{principalName}/principal-roles` |  |  | `spec/polaris-management-service.yml` |
+| `listPrincipals` | `GET` | `/principals` |  |  | `spec/polaris-management-service.yml` |
+| `listTables` | `GET` | `/v1/{prefix}/namespaces/{namespace}/tables` | Catalog API | List all table identifiers underneath a given namespace | `spec/iceberg-rest-catalog-open-api.yaml` |
+| `listViews` | `GET` | `/v1/{prefix}/namespaces/{namespace}/views` | Catalog API | List all view identifiers underneath a given namespace | `spec/iceberg-rest-catalog-open-api.yaml` |
+| `loadCredentials` | `GET` | `/v1/{prefix}/namespaces/{namespace}/tables/{table}/credentials` | Catalog API | Load vended credentials for a table from the catalog | `spec/iceberg-rest-catalog-open-api.yaml` |
+| `loadGenericTable` | `GET` | `/polaris/v1/{prefix}/namespaces/{namespace}/generic-tables/{generic-table}` | Generic Table API | Load a generic table under the given namespace from the catalog | `spec/polaris-catalog-apis/generic-tables-api.yaml` |
+| `loadNamespaceMetadata` | `GET` | `/v1/{prefix}/namespaces/{namespace}` | Catalog API | Load the metadata properties for a namespace | `spec/iceberg-rest-catalog-open-api.yaml` |
+| `loadPolicy` | `GET` | `/polaris/v1/{prefix}/namespaces/{namespace}/policies/{policy-name}` | Policy API | Load a policy | `spec/polaris-catalog-apis/policy-apis.yaml` |
+| `loadTable` | `GET` | `/v1/{prefix}/namespaces/{namespace}/tables/{table}` | Catalog API | Load a table from the catalog | `spec/iceberg-rest-catalog-open-api.yaml` |
+| `loadView` | `GET` | `/v1/{prefix}/namespaces/{namespace}/views/{view}` | Catalog API | Load a view from the catalog | `spec/iceberg-rest-catalog-open-api.yaml` |
+| `planTableScan` | `POST` | `/v1/{prefix}/namespaces/{namespace}/tables/{table}/plan` | Catalog API | Submit a scan for planning | `spec/iceberg-rest-catalog-open-api.yaml` |
+| `registerTable` | `POST` | `/v1/{prefix}/namespaces/{namespace}/register` | Catalog API | Register a table in the given namespace using given metadata file location | `spec/iceberg-rest-catalog-open-api.yaml` |
+| `renameTable` | `POST` | `/v1/{prefix}/tables/rename` | Catalog API | Rename a table from its current name to a new name | `spec/iceberg-rest-catalog-open-api.yaml` |
+| `renameView` | `POST` | `/v1/{prefix}/views/rename` | Catalog API | Rename a view from its current name to a new name | `spec/iceberg-rest-catalog-open-api.yaml` |
+| `replaceView` | `POST` | `/v1/{prefix}/namespaces/{namespace}/views/{view}` | Catalog API | Replace a view | `spec/iceberg-rest-catalog-open-api.yaml` |
+| `reportMetrics` | `POST` | `/v1/{prefix}/namespaces/{namespace}/tables/{table}/metrics` | Catalog API | Send a metrics report to this endpoint to be processed by the backend | `spec/iceberg-rest-catalog-open-api.yaml` |
+| `resetCredentials` | `POST` | `/principals/{principalName}/reset` |  |  | `spec/polaris-management-service.yml` |
+| `revokeCatalogRoleFromPrincipalRole` | `DELETE` | `/principal-roles/{principalRoleName}/catalog-roles/{catalogName}/{catalogRoleName}` |  |  | `spec/polaris-management-service.yml` |
+| `revokeGrantFromCatalogRole` | `POST` | `/catalogs/{catalogName}/catalog-roles/{catalogRoleName}/grants` |  |  | `spec/polaris-management-service.yml` |
+| `revokePrincipalRole` | `DELETE` | `/principals/{principalName}/principal-roles/{principalRoleName}` |  |  | `spec/polaris-management-service.yml` |
+| `rotateCredentials` | `POST` | `/principals/{principalName}/rotate` |  |  | `spec/polaris-management-service.yml` |
+| `sendNotification` | `POST` | `/v1/{prefix}/namespaces/{namespace}/tables/{table}/notifications` | Catalog API | Sends a notification to the table | `spec/polaris-catalog-apis/notifications-api.yaml` |
+| `spec_polaris_catalog_apis_oauth_tokens_api_yaml_POST_v1_oauth_tokens` | `POST` | `/v1/oauth/tokens` | OAuth2 API | Get a token using an OAuth2 flow (DEPRECATED for REMOVAL) | `spec/polaris-catalog-apis/oauth-tokens-api.yaml` |
+| `updateCatalog` | `PUT` | `/catalogs/{catalogName}` |  |  | `spec/polaris-management-service.yml` |
+| `updateCatalogRole` | `PUT` | `/catalogs/{catalogName}/catalog-roles/{catalogRoleName}` |  |  | `spec/polaris-management-service.yml` |
+| `updatePolicy` | `PUT` | `/polaris/v1/{prefix}/namespaces/{namespace}/policies/{policy-name}` | Policy API | Update a policy | `spec/polaris-catalog-apis/policy-apis.yaml` |
+| `updatePrincipal` | `PUT` | `/principals/{principalName}` |  |  | `spec/polaris-management-service.yml` |
+| `updatePrincipalRole` | `PUT` | `/principal-roles/{principalRoleName}` |  |  | `spec/polaris-management-service.yml` |
+| `updateProperties` | `POST` | `/v1/{prefix}/namespaces/{namespace}/properties` | Catalog API | Set or remove properties on a namespace | `spec/iceberg-rest-catalog-open-api.yaml` |
+| `updateTable` | `POST` | `/v1/{prefix}/namespaces/{namespace}/tables/{table}` | Catalog API | Commit updates to a table | `spec/iceberg-rest-catalog-open-api.yaml` |

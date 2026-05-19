@@ -2,6 +2,8 @@
 
 This guide is the practical entry point for using `tsukubatexas/polaris` to manage Apache Polaris with Terraform.
 
+For the generated Terraform Registry-style reference, use [index.md](index.md). For a complete realm header, catalog, principal, role, grant, namespace, and table configuration, use [guides/complete-polaris-configuration.md](guides/complete-polaris-configuration.md) or [../examples/complete-polaris/main.tf](../examples/complete-polaris/main.tf).
+
 The provider is generated from the Apache Polaris OpenAPI operation registry. It intentionally starts with generic building blocks:
 
 - `polaris_rest_resource` for Terraform-managed create/read/update/delete lifecycles.

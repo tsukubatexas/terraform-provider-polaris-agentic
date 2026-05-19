@@ -19,8 +19,8 @@ diff_base_files() {
 
 generated_changes="$(
   {
-    diff_base_files internal/generated/operations_gen.go docs/generated-operations.md
-    git diff --name-only -- internal/generated/operations_gen.go docs/generated-operations.md
+    diff_base_files internal/generated/operations_gen.go
+    git diff --name-only -- internal/generated/operations_gen.go
   } | sort -u
 )"
 
@@ -37,14 +37,14 @@ diff_base_generated_lines() {
   if [[ -n "${base_ref}" ]] && git rev-parse --verify "${base_ref}" >/dev/null 2>&1; then
     local merge_base
     merge_base="$(git merge-base HEAD "${base_ref}")"
-    git diff --unified=0 "${merge_base}...HEAD" -- internal/generated/operations_gen.go docs/generated-operations.md
+    git diff --unified=0 "${merge_base}...HEAD" -- internal/generated/operations_gen.go
   fi
 }
 
 operation_changes="$(
   {
     diff_base_generated_lines
-    git diff --unified=0 -- internal/generated/operations_gen.go docs/generated-operations.md
+    git diff --unified=0 -- internal/generated/operations_gen.go
   } |
     sed -n '/^[+-][^+-]/p' |
     grep -Ev "^[+-](Release: \`[^\`]+\`|var ReleaseTag = \"[^\"]+\")$" || true
