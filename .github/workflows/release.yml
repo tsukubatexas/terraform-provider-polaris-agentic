@@ -26,12 +26,67 @@ jobs:
       tag_name: ${{ steps.release.outputs.tag_name }}
       version: ${{ steps.release.outputs.version }}
     steps:
+      - name: Require Release Please token
+        env:
+          RELEASE_PLEASE_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+        run: |
+          if [[ -n "${RELEASE_PLEASE_TOKEN}" ]]; then
+            exit 0
+          fi
+          echo "::error::RELEASE_PLEASE_TOKEN is required so Release Please PRs trigger protected-branch checks and auto-merge."
+          exit 1
       - id: release
         uses: googleapis/release-please-action@5c625bfb5d1ff62eadeeb3772007f7f66fdcf071 # v4
         with:
-          token: ${{ secrets.RELEASE_PLEASE_TOKEN || github.token }}
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
+
+  queue-release-pr:
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created != 'true' && vars.DISABLE_AUTOMERGE != 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: read
+      pull-requests: write
+    env:
+      GH_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+      - name: Install tooling
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends jq ca-certificates
+      - name: Find pending release PR
+        id: find
+        run: |
+          pr_number="$(gh pr list \
+            --repo "${GITHUB_REPOSITORY}" \
+            --state open \
+            --label "autorelease: pending" \
+            --head "release-please--branches--main" \
+            --json number \
+            --jq 'sort_by(.number) | .[0].number // empty')"
+          if [[ -z "${pr_number}" ]]; then
+            echo "found=false" >> "${GITHUB_OUTPUT}"
+            echo "No pending Release Please PR found."
+            exit 0
+          fi
+          {
+            echo "found=true"
+            echo "number=${pr_number}"
+          } >> "${GITHUB_OUTPUT}"
+      - name: Validate Release Please PR
+        if: ${{ steps.find.outputs.found == 'true' }}
+        run: scripts/validate_release_please_pr.sh "${{ steps.find.outputs.number }}"
+      - name: Enable auto-merge
+        if: ${{ steps.find.outputs.found == 'true' }}
+        run: scripts/try_enable_automerge.sh "${{ steps.find.outputs.number }}" SQUASH
 
   publish-assets:
     needs: release-please
