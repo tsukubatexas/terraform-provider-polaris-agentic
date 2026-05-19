@@ -4,6 +4,8 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -66,6 +68,90 @@ func TestStableOperationIDNormalizesSeparators(t *testing.T) {
 	}
 }
 
+func TestWriteDocsIncludesGeneratedOperationMetadata(t *testing.T) {
+	tmp := t.TempDir()
+	filename := filepath.Join(tmp, "generated-operations.md")
+	ops := map[string]generatedOperation{
+		"createCatalog": {
+			ID:      "createCatalog",
+			Spec:    "spec/polaris-management-service.yml",
+			Method:  "POST",
+			Path:    "/catalogs",
+			Summary: "Create catalog",
+			Tags:    []string{"Management"},
+		},
+	}
+
+	if err := writeDocs(filename, "apache-polaris-test", ops); err != nil {
+		t.Fatalf("writeDocs: %v", err)
+	}
+	body, err := os.ReadFile(filename)
+	if err != nil {
+		t.Fatalf("read docs: %v", err)
+	}
+	text := string(body)
+	for _, want := range []string{
+		"Release: `apache-polaris-test`",
+		"| Operation ID | Method | Path | Tags | Summary | Spec |",
+		"`createCatalog`",
+		"Management",
+		"Create catalog",
+	} {
+		if !strings.Contains(text, want) {
+			t.Fatalf("generated operations doc missing %q:\n%s", want, text)
+		}
+	}
+}
+
+func TestWriteTerraformProviderDocsAndExamples(t *testing.T) {
+	tmp := t.TempDir()
+	docsDir := filepath.Join(tmp, "docs")
+	examplesDir := filepath.Join(tmp, "examples")
+	ops := map[string]generatedOperation{
+		"createCatalog": {
+			ID:     "createCatalog",
+			Spec:   "spec/polaris-management-service.yml",
+			Method: "POST",
+			Path:   "/catalogs",
+		},
+		"createNamespace": {
+			ID:     "createNamespace",
+			Spec:   "spec/iceberg-rest-catalog-open-api.yaml",
+			Method: "POST",
+			Path:   "/v1/{prefix}/namespaces",
+		},
+	}
+
+	if err := writeTerraformProviderDocs(docsDir, "apache-polaris-test", ops); err != nil {
+		t.Fatalf("writeTerraformProviderDocs: %v", err)
+	}
+	if err := writeTerraformExamples(examplesDir, "apache-polaris-test"); err != nil {
+		t.Fatalf("writeTerraformExamples: %v", err)
+	}
+
+	assertFileContains(t, filepath.Join(docsDir, "index.md"), []string{
+		"page_title: \"Polaris Provider\"",
+		"Generated from Apache Polaris release `apache-polaris-test`",
+		"resources/rest_resource.md",
+		"data-sources/rest_call.md",
+	})
+	assertFileContains(t, filepath.Join(docsDir, "resources", "rest_resource.md"), []string{
+		"# polaris_rest_resource",
+		"`create_operation_id`",
+	})
+	assertFileContains(t, filepath.Join(docsDir, "data-sources", "rest_call.md"), []string{
+		"# polaris_rest_call",
+		"`operation_id`",
+	})
+	assertFileContains(t, filepath.Join(examplesDir, "complete-polaris", "main.tf"), []string{
+		"provider \"polaris\"",
+		"create_operation_id = \"createCatalog\"",
+		"create_operation_id = \"createNamespace\"",
+		"create_operation_id = \"createTable\"",
+		"join(\"\\u001F\", var.namespace)",
+	})
+}
+
 func TestDoHTTPRequestsRetriesTransientStatus(t *testing.T) {
 	oldClient := httpClient
 	oldRetryDelays := httpRetryDelays
@@ -107,5 +193,19 @@ func TestDoHTTPRequestsRetriesTransientStatus(t *testing.T) {
 	}
 	if attempts != 2 {
 		t.Fatalf("attempts got %d want 2", attempts)
+	}
+}
+
+func assertFileContains(t *testing.T, filename string, wants []string) {
+	t.Helper()
+	body, err := os.ReadFile(filename)
+	if err != nil {
+		t.Fatalf("read %s: %v", filename, err)
+	}
+	text := string(body)
+	for _, want := range wants {
+		if !strings.Contains(text, want) {
+			t.Fatalf("%s missing %q:\n%s", filename, want, text)
+		}
 	}
 }
