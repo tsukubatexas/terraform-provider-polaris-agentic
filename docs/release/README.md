@@ -19,7 +19,8 @@ flowchart LR
   Monthly --> Gate["Harter Release Gate"]
   Gate --> Merge["Release PR mergen"]
   Merge --> GHRelease["GitHub Release"]
-  GHRelease --> Assets["Provider ZIPs + SHA256SUMS"]
+  GHRelease --> Assets["Provider ZIPs + Manifest + SHA256SUMS + GPG Signatur"]
+  Assets --> Registry["Terraform Registry Ingest"]
 
   Gate --> Tests["Go Tests, Shellcheck, Actionlint, Terraform apply/destroy"]
 ```
@@ -165,13 +166,27 @@ linux_amd64
 linux_arm64
 darwin_amd64
 darwin_arm64
+windows_amd64
+windows_arm64
 ```
 
-Die Assets heißen:
+Die Assets sind Terraform-Registry-ready und heißen:
 
 ```text
 terraform-provider-polaris_<version>_<os>_<arch>.zip
+terraform-provider-polaris_<version>_manifest.json
 terraform-provider-polaris_<version>_SHA256SUMS
+terraform-provider-polaris_<version>_SHA256SUMS.sig
+```
+
+Der Manifest-Asset enthält die unterstützte Terraform Provider Protocol Version. `SHA256SUMS` enthält die ZIP-Dateien und den Manifest-Asset. `SHA256SUMS.sig` ist eine detached GPG-Signatur über `SHA256SUMS`.
+
+Wichtig für `tsukubatexas/polaris`: Die Public Terraform Registry erwartet, dass das GitHub Repository zum Provider-Namen passt. Für diesen Provider sollte das öffentliche Registry-Repo darum `terraform-provider-polaris` heißen. Danach wird der Provider einmalig in der Terraform Registry UI verbunden; neue GitHub Releases werden anschließend automatisch von der Registry eingelesen.
+
+Der öffentliche Registry-Signing-Key liegt in [terraform-registry-gpg-public-key.asc](terraform-registry-gpg-public-key.asc). Fingerprint:
+
+```text
+C9CEBB9BFC7B93194688356A7FADB37AD7485B8F
 ```
 
 ## Secrets
@@ -186,11 +201,15 @@ Für die saubere Release-Automation:
 
 ```text
 RELEASE_PLEASE_TOKEN
+TERRAFORM_REGISTRY_GPG_PRIVATE_KEY
+TERRAFORM_REGISTRY_GPG_PASSPHRASE
 ```
 
 `RELEASE_PLEASE_TOKEN` muss ein fein eingeschränkter GitHub Token sein, der Pull Requests erstellen/mergen und Releases erstellen darf. `GITHUB_TOKEN` wird für Release-Please-PRs absichtlich nicht verwendet, weil GitHub keine Folge-Workflows aus Events startet, die von diesem Token erzeugt wurden. Ohne `RELEASE_PLEASE_TOKEN` brechen die Release-Workflows früh ab, statt einen protected Release-PR zu erzeugen, der nicht auto-meren kann.
 
 Der Release-PR muss mit diesem Token erstellt werden, damit die normalen Pull-Request-Checks starten. Danach legt `.github/workflows/release-pr-automerge.yml` genau diesen PR in die Auto-Merge-Queue. Der Workflow akzeptiert nur `release-please--branches--main` und nur Änderungen an `CHANGELOG.md` sowie `.release-please-manifest.json`.
+
+`TERRAFORM_REGISTRY_GPG_PRIVATE_KEY` ist der ASCII-armored private key zu dem GPG Public Key, der in der Terraform Registry beim Provider hinterlegt ist. `TERRAFORM_REGISTRY_GPG_PASSPHRASE` ist die Passphrase. Release-Workflows setzen `REQUIRE_TERRAFORM_REGISTRY_SIGNATURE=true`; ohne Signatur bricht der Artefakt-Build ab.
 
 ## Repo-Einstellungen
 
@@ -223,6 +242,7 @@ Release-Artefakte lokal testen:
 
 ```bash
 scripts/build_release_artifacts.sh 0.0.999-test dist/release-smoke
+scripts/smoke_release_artifacts.sh
 ```
 
 Danach kann `dist/release-smoke` wieder gelöscht werden.

@@ -20,3 +20,4 @@ Every ADR should explain the context, the decision, and the consequences. If an 
 | [0012](0012-harden-public-open-source-repository.md) | Harden Public Open Source Repository | Accepted |
 | [0013](0013-auto-merge-release-please-prs.md) | Auto-Merge Release Please PRs Through a Hardened Queue | Accepted |
 | [0014](0014-validate-openapi-registry-completeness.md) | Validate OpenAPI Registry Completeness | Accepted |
+| [0015](0015-publish-registry-ready-release-assets.md) | Publish Registry-Ready Release Assets | Accepted |

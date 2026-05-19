@@ -21,7 +21,7 @@ jobs:
         with:
           fetch-depth: 0
       - run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
-      - run: apt-get update && apt-get install -y --no-install-recommends shellcheck curl jq ca-certificates
+      - run: apt-get update && apt-get install -y --no-install-recommends shellcheck curl jq unzip zip gnupg ca-certificates
       - run: go mod download
       - run: go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.11
       - run: shellcheck scripts/*.sh
@@ -38,6 +38,7 @@ jobs:
       - run: scripts/smoke_self_improve_loop.sh
       - run: scripts/smoke_autonomous_pr_hygiene.sh
       - run: scripts/smoke_release_pr_automerge.sh
+      - run: scripts/smoke_release_artifacts.sh
       - run: scripts/smoke_release_matrix.sh
       - run: scripts/check_adr_updates.sh
       - run: scripts/check_static_coverage.sh
