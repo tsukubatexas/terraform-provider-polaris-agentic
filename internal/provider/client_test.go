@@ -48,7 +48,7 @@ func TestClientOAuthAndRequestHeaders(t *testing.T) {
 			if got := r.Header.Get("X-Custom"); got != "custom" {
 				t.Fatalf("custom header got %q", got)
 			}
-			if got := r.Header.Get("User-Agent"); got != "terraform-provider-polaris-agentic/test" {
+			if got := r.Header.Get("User-Agent"); got != "terraform-provider-polaris/test" {
 				t.Fatalf("user-agent got %q", got)
 			}
 			if got := r.URL.Query().Get("include"); got != "metadata" {
@@ -72,7 +72,7 @@ func TestClientOAuthAndRequestHeaders(t *testing.T) {
 	if err != nil {
 		t.Fatalf("newClient: %v", err)
 	}
-	client.UserAgent = "terraform-provider-polaris-agentic/test"
+	client.UserAgent = "terraform-provider-polaris/test"
 
 	for i := 0; i < 2; i++ {
 		resp, err := client.do(

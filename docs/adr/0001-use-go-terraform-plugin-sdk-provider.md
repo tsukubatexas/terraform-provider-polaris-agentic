@@ -12,7 +12,7 @@ Terraform providers are normally distributed as native binaries and are most com
 
 Implement the provider in Go with `github.com/hashicorp/terraform-plugin-sdk/v2`.
 
-Use the module path `github.com/tsukubatexas/terraform-provider-polaris-agentic` and publish the provider namespace as `tsukubatexas/polaris`.
+Use the module path `github.com/tsukubatexas/terraform-provider-polaris` and publish the provider namespace as `tsukubatexas/polaris`.
 
 ## Consequences
 

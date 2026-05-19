@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/tsukubatexas/terraform-provider-polaris-agentic/internal/generated"
+	"github.com/tsukubatexas/terraform-provider-polaris/internal/generated"
 )
 
 func TestParseSpecGeneratesStableFallbackIDs(t *testing.T) {

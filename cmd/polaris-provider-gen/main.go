@@ -126,7 +126,7 @@ func latestRelease() (*releaseResponse, error) {
 		return nil, err
 	}
 	req.Header.Set("Accept", "application/vnd.github+json")
-	req.Header.Set("User-Agent", "terraform-provider-polaris-agentic-generator")
+	req.Header.Set("User-Agent", "terraform-provider-polaris-generator")
 	if token := os.Getenv("GITHUB_TOKEN"); token != "" {
 		req.Header.Set("Authorization", "Bearer "+token)
 	}
@@ -152,7 +152,7 @@ func fetchSpec(tag string, source specSource) ([]byte, bool, error) {
 	if err != nil {
 		return nil, false, err
 	}
-	req.Header.Set("User-Agent", "terraform-provider-polaris-agentic-generator")
+	req.Header.Set("User-Agent", "terraform-provider-polaris-generator")
 	if token := os.Getenv("GITHUB_TOKEN"); token != "" {
 		req.Header.Set("Authorization", "Bearer "+token)
 	}
