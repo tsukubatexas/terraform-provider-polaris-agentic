@@ -7,10 +7,28 @@ on:
 
 permissions:
   contents: write
+  issues: write
   pull-requests: write
 
 jobs:
+  close-obsolete-autonomous-prs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - name: Install hygiene dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends jq ca-certificates
+      - name: Close obsolete autonomous PRs before cleanup
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
+          PR_HYGIENE_STALE_DAYS: ${{ vars.PR_HYGIENE_STALE_DAYS || '14' }}
+          PR_HYGIENE_FAILED_DAYS: ${{ vars.PR_HYGIENE_FAILED_DAYS || '3' }}
+        run: scripts/autonomous_pr_hygiene.sh
+
   quarterly-cleanup:
+    needs: close-obsolete-autonomous-prs
     runs-on: ubuntu-latest
     container: golang:1.24-bookworm
     timeout-minutes: 120
@@ -75,6 +93,7 @@ jobs:
             - `make test`
             - `make build`
             - ADR and static coverage guards
+            - autonomous PR hygiene smoke coverage
             - final static real-Polaris infra loop
           labels: |
             agentic
@@ -111,3 +130,23 @@ jobs:
         env:
           PR_NUMBER: ${{ steps.cpr.outputs.pull-request-number }}
         run: scripts/try_enable_automerge.sh "${PR_NUMBER}" SQUASH
+
+  close-obsolete-autonomous-prs-after-cleanup:
+    needs:
+      - close-obsolete-autonomous-prs
+      - quarterly-cleanup
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - name: Install hygiene dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends jq ca-certificates
+      - name: Close obsolete autonomous PRs after cleanup
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
+          PR_HYGIENE_STALE_DAYS: ${{ vars.PR_HYGIENE_STALE_DAYS || '14' }}
+          PR_HYGIENE_FAILED_DAYS: ${{ vars.PR_HYGIENE_FAILED_DAYS || '3' }}
+        run: scripts/autonomous_pr_hygiene.sh
