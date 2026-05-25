@@ -33,7 +33,7 @@ jobs:
           echo "::error::RELEASE_PLEASE_TOKEN is required so Release Please PRs trigger protected-branch checks and auto-merge."
           exit 1
       - name: Prepare release PR
-        uses: googleapis/release-please-action@5c625bfb5d1ff62eadeeb3772007f7f66fdcf071 # v4
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
         with:
           token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
           config-file: release-please-config.json
@@ -69,7 +69,7 @@ jobs:
             echo "head_sha=$(jq -r '.headRefOid' <<<"${pr_json}")"
             echo "title=$(jq -r '.title' <<<"${pr_json}")"
           } >> "${GITHUB_OUTPUT}"
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         if: ${{ steps.find.outputs.found == 'true' }}
         with:
           ref: ${{ github.event.repository.default_branch }}
@@ -77,17 +77,17 @@ jobs:
       - name: Validate Release Please PR metadata
         if: ${{ steps.find.outputs.found == 'true' }}
         run: scripts/validate_release_please_pr.sh "${{ steps.find.outputs.number }}"
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         if: ${{ steps.find.outputs.found == 'true' }}
         with:
           ref: ${{ steps.find.outputs.head_ref }}
           fetch-depth: 0
           persist-credentials: false
-      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
+      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6.4.0
         if: ${{ steps.find.outputs.found == 'true' }}
         with:
           go-version-file: go.mod
-      - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3
+      - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
         if: ${{ steps.find.outputs.found == 'true' }}
         with:
           terraform_wrapper: false
@@ -145,18 +145,18 @@ jobs:
       - name: Publish GitHub release
         id: publish
         if: ${{ steps.find.outputs.found == 'true' && steps.merge.outputs.merged == 'true' }}
-        uses: googleapis/release-please-action@5c625bfb5d1ff62eadeeb3772007f7f66fdcf071 # v4
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
         with:
           token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
           target-branch: ${{ github.event.repository.default_branch }}
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         if: ${{ steps.publish.outputs.release_created == 'true' }}
         with:
           ref: ${{ steps.publish.outputs.tag_name }}
           fetch-depth: 0
-      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
+      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6.4.0
         if: ${{ steps.publish.outputs.release_created == 'true' }}
         with:
           go-version-file: go.mod
@@ -175,7 +175,7 @@ jobs:
           REQUIRE_TERRAFORM_REGISTRY_SIGNATURE: "true"
       - name: Upload release assets
         if: ${{ steps.publish.outputs.release_created == 'true' }}
-        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
+        uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda # v3.0.0
         with:
           tag_name: ${{ steps.publish.outputs.tag_name }}
           files: |
